@@ -62,7 +62,7 @@ struct lifecycle : public default_lifecycle {
         append_isa<tx_msg_check_task>(ea);
         append_isa<rx_msg>(ea);
         append_isa<bc_msg>(ea);
-        //append_isa<bc_msg_check_task>(ea);
+        append_isa<bc_msg_check_task>(ea);
         append_isa<rotate>(ea);
         append_isa<rotate_cw>(ea);
         append_isa<rotate_ccw>(ea);

@@ -25,3 +25,11 @@ exe mt :
     : <link>static ;
 
 install dist : mt : <location>$(HOME)/bin ;
+
+
+exe mt_lr_gls :
+    src/mt_lr_gls.cpp
+    /libea//libea_runner
+    : <link>static ;
+
+install dist : mt_lr_gls : <location>$(HOME)/bin ;

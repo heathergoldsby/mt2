@@ -1,0 +1,27 @@
+import os ;
+local HOME = [ os.environ HOME ] ;
+
+project : 
+    requirements
+    <define>BOOST_PARAMETER_MAX_ARITY=7
+    <define>BOOST_GEOMETRY_EMPTY_INPUT_NO_THROW 
+    <include>./include
+    ;
+
+use-project /libea : ../ealib/libea ;
+
+import testing ;
+
+exe avida-logic9 :
+    src/logic9.cpp
+    /libea//libea_runner
+    : <link>static ;
+
+install dist : avida-logic9 : <location>$(HOME)/bin ;
+
+exe mt :
+    src/mt.cpp
+    /libea//libea_runner
+    : <link>static ;
+
+install dist : mt : <location>$(HOME)/bin ;

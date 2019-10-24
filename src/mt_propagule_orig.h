@@ -58,7 +58,7 @@ DIGEVO_INSTRUCTION_DECL(if_res_less_than_thresh) {
 /* Divide remote only works if there are enough resources... */
 DIGEVO_INSTRUCTION_DECL(h_divide_remote) {
     get<TASK_PROFILE>(*p,"") += "P";
-    
+
     if(hw.age() >= (0.8 * hw.original_size())) {
         typename Hardware::genome_type& r=hw.repr();
         
@@ -100,64 +100,64 @@ DIGEVO_INSTRUCTION_DECL(h_divide_remote) {
 
 /* changed to using ramped costs... */
 /*
- DIGEVO_INSTRUCTION_DECL(h_divide_local) {
+DIGEVO_INSTRUCTION_DECL(h_divide_local) {
  get<TASK_PROFILE>(*p,"") += "R";
- 
- if(hw.age() >= (0.8 * hw.original_size())) {
- typename Hardware::genome_type& r=hw.repr();
- 
- // Check to see if the offspring would be a good length.
- int divide_pos = hw.getHeadLocation(Hardware::RH);
- int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH);
- 
- int child_size = r.size() - divide_pos - extra_lines;
- int parent_size = r.size() - child_size - extra_lines;
- double ratio = 2.0;
- 
- if ((child_size < (hw.original_size()/ratio)) ||
- (child_size > (hw.original_size()*ratio)) ||
- (parent_size < (hw.original_size()/ratio)) ||
- (parent_size > (hw.original_size()*ratio))){
- // fail!
- return;
- }
- 
- // defaults to no cost... ramps up the cost one step per update till max.
- int local_cost = 0;
- int birth_update = get<IND_BIRTH_UPDATE>(ea);
- int start_update = get<COST_START_UPDATE>(ea);
- if (get<IND_REP_THRESHOLD>(ea, 0.0) > 0) {
- int cu =ea.current_update() + birth_update;
- local_cost = floor((cu - start_update)/get<COST_RAMP>(ea,1));
- if (local_cost < 0) { local_cost = 0; }
- if (local_cost > get<IND_REP_THRESHOLD>(ea, 0.0)) { local_cost = get<IND_REP_THRESHOLD>(ea, 0.0); }
- }
- 
- typename Hardware::genome_type::iterator f=r.begin(),l=r.begin();
- std::advance(f, hw.getHeadLocation(Hardware::RH));
- std::advance(l, hw.getHeadLocation(Hardware::WH));
- typename Hardware::genome_type offr(f, l);
- 
- r.resize(parent_size);
- hw.replicated_soft_reset();
- 
- if (get<GROUP_RESOURCE_UNITS>(ea, 0.0) >= local_cost) {
- // raise flag
- int res_amt = get<GROUP_RESOURCE_UNITS>(ea) - local_cost;
- put<GROUP_RESOURCE_UNITS>(res_amt,ea);
- replicate(p, offr, ea);
- 
- }
- 
- 
- }
- }
- */
+
+    if(hw.age() >= (0.8 * hw.original_size())) {
+        typename Hardware::genome_type& r=hw.repr();
+        
+        // Check to see if the offspring would be a good length.
+        int divide_pos = hw.getHeadLocation(Hardware::RH);
+        int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH);
+        
+        int child_size = r.size() - divide_pos - extra_lines;
+        int parent_size = r.size() - child_size - extra_lines;
+        double ratio = 2.0;
+        
+        if ((child_size < (hw.original_size()/ratio)) ||
+            (child_size > (hw.original_size()*ratio)) ||
+            (parent_size < (hw.original_size()/ratio)) ||
+            (parent_size > (hw.original_size()*ratio))){
+            // fail!
+            return;
+        }
+        
+        // defaults to no cost... ramps up the cost one step per update till max.
+        int local_cost = 0;
+        int birth_update = get<IND_BIRTH_UPDATE>(ea);
+        int start_update = get<COST_START_UPDATE>(ea);
+        if (get<IND_REP_THRESHOLD>(ea, 0.0) > 0) {
+            int cu =ea.current_update() + birth_update;
+            local_cost = floor((cu - start_update)/get<COST_RAMP>(ea,1));
+            if (local_cost < 0) { local_cost = 0; }
+            if (local_cost > get<IND_REP_THRESHOLD>(ea, 0.0)) { local_cost = get<IND_REP_THRESHOLD>(ea, 0.0); }
+        }
+        
+        typename Hardware::genome_type::iterator f=r.begin(),l=r.begin();
+        std::advance(f, hw.getHeadLocation(Hardware::RH));
+        std::advance(l, hw.getHeadLocation(Hardware::WH));
+        typename Hardware::genome_type offr(f, l);
+        
+        r.resize(parent_size);
+        hw.replicated_soft_reset();
+        
+        if (get<GROUP_RESOURCE_UNITS>(ea, 0.0) >= local_cost) {
+            // raise flag
+            int res_amt = get<GROUP_RESOURCE_UNITS>(ea) - local_cost;
+            put<GROUP_RESOURCE_UNITS>(res_amt,ea);
+            replicate(p, offr, ea);
+            
+        }
+        
+        
+    }
+}
+*/
 
 
 DIGEVO_INSTRUCTION_DECL(h_divide_local) {
     get<TASK_PROFILE>(*p,"") += "R";
-    
+
     if(hw.age() >= (0.8 * hw.original_size())) {
         typename Hardware::genome_type& r=hw.repr();
         
@@ -193,7 +193,7 @@ DIGEVO_INSTRUCTION_DECL(h_divide_local) {
         int current_update = ea.current_update();
         if ((ea.current_update() + birth_update) < start_update ) {
             indrep = 0;
-        }
+        } 
         
         if (get<GROUP_RESOURCE_UNITS>(ea, 0.0) > indrep) {
             // raise flag
@@ -207,51 +207,51 @@ DIGEVO_INSTRUCTION_DECL(h_divide_local) {
     }
 }
 /*
- DIGEVO_INSTRUCTION_DECL(h_divide_local) {
- get<TASK_PROFILE>(*p,"") += "R";
- 
- if(hw.age() >= (0.8 * hw.original_size())) {
- typename Hardware::genome_type& r=hw.repr();
- 
- // Check to see if the offspring would be a good length.
- int divide_pos = hw.getHeadLocation(Hardware::RH);
- int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH);
- 
- int child_size = r.size() - divide_pos - extra_lines;
- int parent_size = r.size() - child_size - extra_lines;
- double ratio = 2.0;
- 
- if ((child_size < (hw.original_size()/ratio)) ||
- (child_size > (hw.original_size()*ratio)) ||
- (parent_size < (hw.original_size()/ratio)) ||
- (parent_size > (hw.original_size()*ratio))){
- // fail!
- return;
- }
- 
- 
- typename Hardware::genome_type::iterator f=r.begin(),l=r.begin();
- std::advance(f, hw.getHeadLocation(Hardware::RH));
- std::advance(l, hw.getHeadLocation(Hardware::WH));
- typename Hardware::genome_type offr(f, l);
- 
- r.resize(parent_size);
- hw.replicated_soft_reset();
- 
- int indrep = get<IND_REP_THRESHOLD>(ea, 0.0);
- 
- if (get<GROUP_RESOURCE_UNITS>(ea, 0.0) > get<IND_REP_THRESHOLD>(ea, 0.0)) {
- // raise flag
- int res_amt = get<GROUP_RESOURCE_UNITS>(ea) - get<IND_REP_THRESHOLD>(ea, 0.0);
- put<GROUP_RESOURCE_UNITS>(res_amt,ea);
- replicate(p, offr, ea);
- 
- }
- 
- 
- }
- }
- */
+DIGEVO_INSTRUCTION_DECL(h_divide_local) {
+    get<TASK_PROFILE>(*p,"") += "R";
+    
+    if(hw.age() >= (0.8 * hw.original_size())) {
+        typename Hardware::genome_type& r=hw.repr();
+        
+        // Check to see if the offspring would be a good length.
+        int divide_pos = hw.getHeadLocation(Hardware::RH);
+        int extra_lines = r.size() - hw.getHeadLocation(Hardware::WH);
+        
+        int child_size = r.size() - divide_pos - extra_lines;
+        int parent_size = r.size() - child_size - extra_lines;
+        double ratio = 2.0;
+        
+        if ((child_size < (hw.original_size()/ratio)) ||
+            (child_size > (hw.original_size()*ratio)) ||
+            (parent_size < (hw.original_size()/ratio)) ||
+            (parent_size > (hw.original_size()*ratio))){
+            // fail!
+            return;
+        }
+        
+        
+        typename Hardware::genome_type::iterator f=r.begin(),l=r.begin();
+        std::advance(f, hw.getHeadLocation(Hardware::RH));
+        std::advance(l, hw.getHeadLocation(Hardware::WH));
+        typename Hardware::genome_type offr(f, l);
+        
+        r.resize(parent_size);
+        hw.replicated_soft_reset();
+        
+        int indrep = get<IND_REP_THRESHOLD>(ea, 0.0);
+        
+        if (get<GROUP_RESOURCE_UNITS>(ea, 0.0) > get<IND_REP_THRESHOLD>(ea, 0.0)) {
+            // raise flag
+            int res_amt = get<GROUP_RESOURCE_UNITS>(ea) - get<IND_REP_THRESHOLD>(ea, 0.0);
+            put<GROUP_RESOURCE_UNITS>(res_amt,ea);
+            replicate(p, offr, ea);
+            
+        }
+        
+        
+    }
+}
+*/
 
 
 
@@ -315,6 +315,7 @@ DIGEVO_INSTRUCTION_DECL(h_alt_divide) {
 }
 
 
+
 /* Divide remote only works if there are enough resources... */
 DIGEVO_INSTRUCTION_DECL(h_divide_multicell) {
     if(hw.age() >= (0.8 * hw.original_size())) {
@@ -367,6 +368,194 @@ DIGEVO_INSTRUCTION_DECL(h_divide_multicell) {
 }
 
 
+// make sure resources are moved to multi. check gls for example
+
+//! Performs multicell replication using germ lines. One cells is selected, mutated, and then used to create the appropriate number of cells. Thus, the starting multicell offspring is clonal.
+template <typename MEA>
+struct mt_propagule : end_of_update_event<MEA> {
+    //! Constructor.
+    mt_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt.dat") {
+        _df.add_field("update")
+        .add_field("mean_rep_time")
+        .add_field("mean_res")
+        .add_field("mean_multicell_size")
+        .add_field("replication_count")
+        .add_field("mean_generation");
+        num_rep = 0;
+    }
+    
+    
+    //! Destructor.
+    virtual ~mt_propagule() {
+    }
+    
+    //! Perform germline replication among populations.
+    virtual void operator()(MEA& mea) {
+        
+        
+        configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(mea));
+        accumulator_set<double, stats<tag::mean> > gen;
+        
+        
+        // Replicate!
+        int ru = 1;
+        if ((mea.current_update() % ru) == 0) {
+            
+            // See if any subpops have exceeded the resource threshold
+            typename MEA::population_type offspring;
+            for(typename MEA::iterator i=mea.begin(); i!=mea.end(); ++i) {
+                
+                // track time since group rep
+                get<MULTICELL_REP_TIME>(*i,0) +=1;
+                gen(get<IND_GENERATION>(*i));
+                // figure out which individuals from the parent comprise the propagule:
+                typedef typename MEA::subpopulation_type::population_type propagule_type;
+                
+                // track multicells (even those that don't replicate)
+                if ((mea.current_update() % 100) == 0) {
+                    
+                    int alive_count = 0;
+                    
+                    for(typename propagule_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
+                        if ((*j)->alive()) {
+                            alive_count++;
+                        }
+                    }
+                    
+                    multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i,0));
+                    multicell_res.push_back(get<GROUP_RESOURCE_UNITS>(*i,0));
+                    multicell_size.push_back(alive_count);
+                }
+                
+                
+                
+                
+                if (get<DIVIDE_REMOTE>(*i,0)){
+                    
+                    
+                    // get a new subpopulation:
+                    typename MEA::individual_ptr_type p = mea.make_individual();
+                    p->initialize(mea.md());
+                    p->reset_rng(mea.rng().seed());
+                    
+                    int num_moved = 0;
+                    for(typename propagule_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
+                        if ((*j)->alive()) {
+                            typename MEA::subpopulation_type::genome_type r((*j)->genome().begin(),
+                                                                            (*j)->genome().begin()+(*j)->hw().original_size());
+                            typename MEA::subpopulation_type::individual_ptr_type q = p->make_individual(r);
+                            
+                            inherits_from(**j, *q, *p);
+                            mutate(*q,m,*p);
+                            
+                            
+                            p->insert(p->end(), q);
+                            
+                            ++num_moved;
+                            
+                        }
+                        if (num_moved > 0) {
+                            break;
+                        }
+                    }
+                    
+                    
+                    
+                    // track last replication state
+                    int rep_size = i->population().size();
+//                    int last_rep_state = get<LAST_REPLICATION_STATE>(*i,0);
+//
+//                    if (rep_size > 1) {
+//                        put<LAST_REPLICATION_STATE>(1,p);
+//                        if (last_rep_state == 0) {
+//                            get<REPLICATION_STATE_INDEX>(*i,0) += 1;
+//                        }
+//                    } else {
+//                        put<LAST_REPLICATION_STATE>(0,p);
+//                        if (last_rep_state == 1) {
+//                            get<REPLICATION_STATE_INDEX>(*i,0) += 1;
+//                        }
+//                    }
+//                    put<REPLICATION_STATE_INDEX>(get<REPLICATION_STATE_INDEX>(*i,0),p);
+                    
+                    
+                    
+                    offspring.insert(offspring.end(),p);
+                    
+                    
+                    // replication
+                    ++num_rep;
+                    
+                    // reset parent multicell
+                    i->resources().reset();
+                    put<GROUP_RESOURCE_UNITS>(0,*i);
+                    put<MULTICELL_REP_TIME>(0,*i);
+                    put<DIVIDE_REMOTE>(0,*i);
+                    
+                    // i == parent individual;
+                    typename MEA::population_type parent_pop, offspring_pop;
+                    parent_pop.push_back(*i.base());
+                    offspring_pop.push_back(p);
+                    inherits(parent_pop, offspring_pop, mea);
+                    
+                    
+                    
+                }
+            }
+            
+            
+            // select surviving parent groups
+            if (offspring.size() > 0) {
+                int n = get<METAPOPULATION_SIZE>(mea) - offspring.size();
+                
+                typename MEA::population_type survivors;
+                select_n<selection::random< > >(mea.population(), survivors, n, mea);
+                
+                // add the offspring to the list of survivors:
+                survivors.insert(survivors.end(), offspring.begin(), offspring.end());
+                
+                // and swap 'em in for the current population:
+                std::swap(mea.population(), survivors);
+            }
+        }
+        
+        if ((mea.current_update() % 100) == 0) {
+            
+            if (multicell_rep.size() > 0) {
+                _df.write(mea.current_update())
+                .write(std::accumulate(multicell_rep.begin(), multicell_rep.end(), 0.0)/multicell_rep.size())
+                .write(std::accumulate(multicell_res.begin(), multicell_res.end(), 0.0)/multicell_res.size())
+                .write(std::accumulate(multicell_size.begin(), multicell_size.end(), 0.0)/multicell_size.size())
+                .write(num_rep)
+                .write(mean(gen))
+                .endl();
+                num_rep = 0;
+                multicell_rep.clear();
+                multicell_res.clear();
+                multicell_size.clear();
+            } else {
+                _df.write(mea.current_update())
+                .write(0.0)
+                .write(0.0)
+                .write(0.0)
+                .write(num_rep)
+                .write(mean(gen))
+                .endl();
+            }
+        }
+        
+    }
+    
+    datafile _df;
+    std::deque<double> multicell_rep;
+    std::deque<double> multicell_res;
+    std::deque<double> multicell_size;
+    
+    int num_rep;
+    
+    
+};
+
 
 // make sure resources are moved to multi. check gls for example
 
@@ -413,20 +602,20 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         
         
         configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(mea));
-        
+
         int count_uni = 0;
         int count_multi = 0;
         
         float uni_index = 0;
         float multi_index = 0;
         accumulator_set<double, stats<tag::mean> > gen;
-        
+
         
         // Replicate!
         int ru = 1;
         if ((mea.current_update() % ru) == 0) {
-            
-            
+
+
             // See if any subpops have exceeded the resource threshold
             typename MEA::population_type offspring;
             for(typename MEA::iterator i=mea.begin(); i!=mea.end(); ++i) {
@@ -434,7 +623,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                 // track time since group rep
                 get<MULTICELL_REP_TIME>(*i,0) +=1;
                 gen(get<IND_GENERATION>(*i));
-                
+
                 
                 // figure out which individuals from the parent comprise the propagule:
                 typedef typename MEA::subpopulation_type::population_type propagule_type;
@@ -454,7 +643,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i,0));
                     multicell_res.push_back(get<GROUP_RESOURCE_UNITS>(*i,0));
                     multicell_size.push_back(alive_count);
-                    
+                            
                     if (alive_count == 1) {
                         count_uni += 1;
                         uni_index += get<REPLICATION_STATE_INDEX>(*i,0);
@@ -478,7 +667,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     int pop_count = 0;
                     accumulator_set<double, stats<tag::mean, tag::variance> > germ_workload_acc;
                     accumulator_set<double, stats<tag::mean, tag::variance> > soma_workload_acc;
-                    
+
                     
                     
                     
@@ -515,7 +704,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     
                     if (!germ_present) continue;
                     
-                    
+                                       
                     if (pop_count == 1) { // track as uni
                         uni_rep_time_acc.push_back(get<MULTICELL_REP_TIME>(*i));
                         uni_workload_acc.push_back(total_workload);
@@ -537,7 +726,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                         soma_workload.push_back(0);
                         soma_workload_var.push_back(0);
                     }
-                    
+
                     // track last replication state
                     int rep_size = i->population().size();
                     int last_rep_state = get<LAST_REPLICATION_STATE>(*i,0);
@@ -545,14 +734,14 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     if (rep_size > 1) {
                         put<LAST_REPLICATION_STATE>(1,*p);
                         put<LAST_REPLICATION_STATE>(1,*i);
-                        
+
                         if (last_rep_state == 0) {
                             get<REPLICATION_STATE_INDEX>(*i,0) += 1;
                         }
                     } else {
                         put<LAST_REPLICATION_STATE>(0,*p);
                         put<LAST_REPLICATION_STATE>(0,*i);
-                        
+
                         if (last_rep_state == 1) {
                             get<REPLICATION_STATE_INDEX>(*i,0) += 1;
                         }
@@ -560,7 +749,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     put<REPLICATION_STATE_INDEX>(get<REPLICATION_STATE_INDEX>(*i,0),*p);
                     put<ARCHIVE_MARK>(get<ARCHIVE_MARK>(*i,0),*p);
                     
-                    
+
                     
                     offspring.insert(offspring.end(),p);
                     
@@ -580,8 +769,8 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     offspring_pop.push_back(p);
                     inherits(parent_pop, offspring_pop, mea);
                     
-                    
-                    
+
+
                     
                 }
             }
@@ -601,7 +790,6 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                 std::swap(mea.population(), survivors);
             }
         }
-        
         
         if ((mea.current_update() % 100) == 0) {
             _df.write(mea.current_update());
@@ -667,13 +855,13 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
             
             if (multi_index) {
                 _df.write(multi_index / count_multi);
-                
+
             } else {
                 _df.write(0);
             }
             _df.write(mea.size());
             _df.write(mean(gen));
-            
+
             _df.endl();
             num_rep = 0;
             multicell_rep.clear();
@@ -710,8 +898,8 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
     std::deque<double> mc_workload_acc;
     std::deque<double> uni_rep_time_acc;
     std::deque<double> mc_rep_time_acc;
-    
-    
+
+   
     int num_rep;
     
     
@@ -812,7 +1000,7 @@ struct dol_tracking : end_of_update_event<MEA> {
                 }
                 if ((shannon_sum > 0 ) &&(active_pop > 0)) {
                     shannon_norm = shannon_sum / log((double)active_pop);
-                }
+                } 
                 
                 shannon_sum_all += shannon_sum;
                 shannon_norm_all += shannon_norm;

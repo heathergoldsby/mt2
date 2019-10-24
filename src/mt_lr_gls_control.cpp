@@ -8,7 +8,7 @@
 //#include <ea/selection/rank.h>
 //#include <ea/datafiles/fitness.h>
 //#include <ea/digital_evolution/extra_instruction_sets/matrix.h>
-#include <ea/metapopulation.h>
+
 #include "gls.h"
 
 //#include "evolved_striped_ancestor2.h"
@@ -17,13 +17,10 @@
 //#include "subpopulation_propagule_split.h"
 
 #include "movie.h"
-//#include "ko.h"
+#include "lod_knockouts.h"
+
 #include "mt_propagule_orig.h"
 #include "multi_birth_selfrep_not_remote_ancestor.h"
-#include "lod_knockouts.h"
-#include "lod_knockouts_fitness.h"
-
-#include "mt_analysis.h"
 
 
 
@@ -86,12 +83,9 @@ struct lifecycle : public default_lifecycle {
         
         add_event<task_resource_consumption>(ea);
         add_event<task_switching_cost>(ea);
-        add_event<task_profile_tracking>(ea);
-        add_event<task_profile_birth_event>(ea);
         
-
         add_event<ts_birth_event>(ea);
-        add_event<task_mutagenesis>(ea);
+        add_event<task_mutagenesis_control2>(ea);
         add_event<gs_inherit_event>(ea);
         
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
@@ -156,7 +150,7 @@ struct lifecycle : public default_lifecycle {
         task_nor->consumes(resG);
         task_xor->consumes(resH);
         task_equals->consumes(resI);
-
+        
         
         
     }
@@ -198,7 +192,6 @@ typedef metapopulation
 , ancestors::default_subpopulation
 , dont_stop
 , fill_metapopulation
-//, one_metapopulation
 , default_lifecycle
 , subpop_trait
 > mea_type;
@@ -255,44 +248,24 @@ public:
         add_option<RES_FRACTION_CONSUMED>(this);
         add_option<COST_RAMP>(this);
         add_option<COST_START_UPDATE>(this);
-
+        
+        
         add_option<ARCHIVE_INPUT>(this);
         add_option<ARCHIVE_OUTPUT>(this);
         add_option<ARCHIVE_MARK>(this);
         add_option<ARCHIVE_OUTPUT_SIZE>(this);
-        add_option<LOD_START_ANALYSIS>(this);
-        add_option<LOD_END_ANALYSIS>(this);
-        add_option<ANALYSIS_LOD_REPS>(this);
-        add_option<ANALYSIS_LOD_START_COST>(this);
+        
     }
     
     virtual void gather_tools() {
         
-//        add_tool<movie>(this);
-//        add_tool<ealib::analysis::lod_knockouts>(this);
-//        add_tool<ealib::analysis::lod_knockouts2>(this);
-//
-//        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
-//        add_tool<ealib::analysis::lod_report_gs>(this);
-//        add_tool<ealib::analysis::lod_transition>(this);
-//        add_tool<ealib::analysis::lod_gls_circle_square_plot>(this);
-//        add_tool<ealib::analysis::movie_gs>(this);
-//        add_tool<ealib::analysis::task_profile2>(this);
-//        add_tool<ealib::analysis::temporal_poly>(this);
-//        add_tool<ealib::analysis::dom_mutational_analysis>(this);
-//        add_tool<ealib::analysis::merge_archives>(this);
-//        add_tool<ealib::analysis::archive_population>(this);
-//        add_tool<ealib::analysis::lod_archive_reversion>(this);
-//        add_tool<ealib::analysis::archive_dominant>(this);
-//        add_tool<ealib::analysis::lod_last_knockouts_uni_analysis>(this);
-//        add_tool<ealib::analysis::lod_last_knockouts_line>(this);
-//        add_tool<ealib::analysis::lod_archive_trans>(this);
-//        add_tool<ealib::analysis::lod_forced_uni>(this);
-        add_tool<ealib::analysis::lod_fitness>(this);
-        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
-        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
-        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
-        add_tool<ealib::analysis::lod_final_entrench>(this);
+        add_tool<movie>(this);
+        add_tool<ealib::analysis::lod_last_knockouts_uni_analysis>(this);
+        add_tool<ealib::analysis::lod_transition>(this);
+        add_tool<ealib::analysis::lod_archive_reversion>(this);
+        add_tool<ealib::analysis::lod_archive_trans>(this);
+        add_tool<ealib::analysis::lod_forced_uni>(this);
+
 
 
     }
@@ -304,8 +277,10 @@ public:
         add_event<task_performed_tracking>(ea);
         //add_event<task_switch_tracking>(ea);
         add_event<dol_tracking>(ea);
-        //add_event<ealib::analysis::mark_tracking>(ea);
-        
+
+        //add_event<task_performed_tracking>(ea);
+        //add_event<task_switch_tracking>(ea);
+        //add_event<dol_tracking>(ea);
         
         
     }

@@ -3,21 +3,10 @@
 #include <ea/subpopulation_founder.h>
 #include <ea/line_of_descent.h>
 #include <ea/analysis/archive.h>
-//#include <ea/generational_models/periodic_competition.h>
-//#include <ea/generational_models/moran_process.h>
-//#include <ea/selection/rank.h>
-//#include <ea/datafiles/fitness.h>
-//#include <ea/digital_evolution/extra_instruction_sets/matrix.h>
 
-
-//#include "evolved_striped_ancestor2.h"
-//#include "multibirth_not_nand_prop_ancestor.h"
-
-//#include "subpopulation_propagule_split.h"
-
-
-
+#include "gls.h"
 #include "mt_propagule_orig.h"
+#include "ps_simple.h"
 #include "multi_birth_selfrep_not_remote_ancestor.h"
 
 
@@ -71,48 +60,23 @@ struct lifecycle : public default_lifecycle {
         append_isa<jump_head>(ea);
         append_isa<is_neighbor>(ea);
         append_isa<h_divide_remote>(ea);
-        append_isa<h_alt_divide>(ea);
+        //append_isa<h_alt_divide>(ea);
+        append_isa<become_soma>(ea);
+        append_isa<if_germ>(ea);
+        append_isa<if_soma>(ea);
+        append_isa<flag_0>(ea);
+        append_isa<flag_1>(ea);
+        append_isa<unlock_flag>(ea);
+        append_isa<lock_flag>(ea);
+        append_isa<if_member_start_propagule>(ea);
+        append_isa<if_not_member_start_propagule>(ea);
+        append_isa<if_birth_0>(ea);
+        append_isa<if_not_birth_0>(ea);
+        append_isa<get_birth_order>(ea);
         
-        add_event<task_resource_consumption>(ea);
-        add_event<task_switching_cost>(ea);
+        add_event<gs_inherit_event>(ea);
+        add_event<birth_order_event>(ea);
         
-        add_event<ts_birth_event>(ea);
-        
-        typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
-        typedef typename EA::resource_ptr_type resource_ptr_type;
-        
-        task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<0> >("not", ea);
-        task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<0> >("nand", ea);
-//        task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<0> >("and", ea);
-//        task_ptr_type task_ornot = make_task<tasks::task_ornot,catalysts::additive<0> >("ornot", ea);
-//        task_ptr_type task_or = make_task<tasks::task_or,catalysts::additive<0> >("or", ea);
-//        task_ptr_type task_andnot = make_task<tasks::task_andnot,catalysts::additive<0> >("andnot", ea);
-//        task_ptr_type task_nor = make_task<tasks::task_nor,catalysts::additive<0> >("nor", ea);
-//        task_ptr_type task_xor = make_task<tasks::task_xor,catalysts::additive<0> >("xor", ea);
-//        task_ptr_type task_equals = make_task<tasks::task_equals,catalysts::additive<0> >("equals", ea);
-
-        resource_ptr_type resA = make_resource("resA", ea);
-        resource_ptr_type resB = make_resource("resB", ea);
-        
-//        resource_ptr_type resA = make_resource("resA", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resB = make_resource("resB", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resC = make_resource("resC", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resD = make_resource("resD", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resE = make_resource("resE", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resF = make_resource("resF", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resG = make_resource("resG", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resH = make_resource("resH", 100.0, 1.0, 0.01, 0.05, ea);
-//        resource_ptr_type resI = make_resource("resI", 100.0, 1.0, 0.01, 0.05, ea);
-        
-        task_not->consumes(resA);
-        task_nand->consumes(resB);
-//        task_and->consumes(resC);
-//        task_ornot->consumes(resD);
-//        task_or->consumes(resE);
-//        task_andnot->consumes(resF);
-//        task_nor->consumes(resG);
-//        task_xor->consumes(resH);
-//        task_equals->consumes(resI);
         
         
     }
@@ -185,25 +149,27 @@ public:
         add_option<MUTATION_UNIFORM_INT_MAX>(this);
         
         add_option<ANALYSIS_INPUT>(this);
-
+        
         
         // ts specific options
-        add_option<TASK_SWITCHING_COST>(this);
         add_option<GERM_MUTATION_PER_SITE_P>(this);
         add_option<GROUP_REP_THRESHOLD>(this);
-
+        
         
     }
     
     virtual void gather_tools() {
-
+        
         
     }
     
     virtual void gather_events(EA& ea) {
-        add_event<mt_propagule>(ea);
-        add_event<task_performed_tracking>(ea);
-
+        add_event<mt_ps_propagule>(ea);
+        add_event<flag_based_resources>(ea);
+        //        add_event<germ_soma_based_resources>(ea); # does not work. wrong accounting on soma size...
+        
+        //        add_event<size_based_resources>(ea);
+        
     }
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, cli);

@@ -67,6 +67,7 @@ LIBEA_MD_DECL(CURR_SOMA_SIZE, "ea.gls.curr_soma_size", int);
  */
 
 DIGEVO_INSTRUCTION_DECL(become_soma) {
+    get<TASK_PROFILE>(*p,"") += "S";
 
     if (get<GERM_STATUS>(*p, true) == true) {
         get<CURR_SOMA_SIZE>(ea,0) += 1;
@@ -238,8 +239,8 @@ struct task_mutagenesis_control : reaction_event<EA> {
             
             configurable_per_site m(prob);
             mutate(sacrificial_org,m,ea);
-            get<WORKLOAD>(sacrificial_org,0.0) += mult;
         }
+        get<WORKLOAD>(sacrificial_org,0.0) += mult;
     }
 };
 
@@ -279,8 +280,8 @@ struct task_mutagenesis_control2 : reaction_event<EA> {
             
             configurable_per_site m(prob);
             mutate(sacrificial_org,m,ea);
-            get<WORKLOAD>(sacrificial_org,0.0) += mult;
         }
+        get<WORKLOAD>(sacrificial_org,0.0) += mult;
     }
 };
 

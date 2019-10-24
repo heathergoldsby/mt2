@@ -9,21 +9,26 @@
 //#include <ea/datafiles/fitness.h>
 //#include <ea/digital_evolution/extra_instruction_sets/matrix.h>
 #include <ea/metapopulation.h>
-#include "gls.h"
+//#include "gls.h"
 
 //#include "evolved_striped_ancestor2.h"
 //#include "multibirth_not_nand_prop_ancestor.h"
 
 //#include "subpopulation_propagule_split.h"
 
-#include "movie.h"
+//#include "movie.h"
 //#include "ko.h"
-#include "mt_propagule_orig.h"
-#include "multi_birth_selfrep_not_remote_ancestor.h"
-#include "lod_knockouts.h"
-#include "lod_knockouts_fitness.h"
+//#include "mt_propagule_orig.h"
+//#include "multi_birth_selfrep_not_remote_ancestor.h"
+//#include "lod_knockouts_fitness.h"
 
-#include "mt_analysis.h"
+//#include "mt_analysis.h"
+
+#include "multi_birth_selfrep_not_remote_ancestor.h"
+#include "mt.h"
+//#include "ts.h"
+#include "gls.h"
+
 
 
 
@@ -89,15 +94,16 @@ struct lifecycle : public default_lifecycle {
         add_event<task_profile_tracking>(ea);
         add_event<task_profile_birth_event>(ea);
         
-
+        
         add_event<ts_birth_event>(ea);
-        add_event<task_mutagenesis>(ea);
-        add_event<gs_inherit_event>(ea);
+        add_event<task_mutagenesis>(ea); // <- this event mutates genomes when tasks are performed
+        add_event<gs_inherit_event>(ea); // <- this event controls the germ/soma state being inherited
         
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
         
-        // Add tasks
+        // Add tasks -- all of the additive values are set to 0 since individual cell's don't change their
+        // execution speed
         task_ptr_type task_not = make_task<tasks::task_not,catalysts::additive<0> >("not", ea);
         task_ptr_type task_nand = make_task<tasks::task_nand,catalysts::additive<0> >("nand", ea);
         task_ptr_type task_and = make_task<tasks::task_and,catalysts::additive<0> >("and", ea);
@@ -113,18 +119,6 @@ struct lifecycle : public default_lifecycle {
         double inflow = get<RES_INFLOW_AMOUNT>(ea,0);
         double outflow = get<RES_OUTFLOW_FRACTION>(ea,0);
         double frac = get<RES_FRACTION_CONSUMED>(ea,0);
-        //
-        //        // initial amount (unit), inflow (unit), outflow (percentage), percent consumed, ea
-        //        resource_ptr_type resA = make_resource("resA", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resB = make_resource("resB", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resC = make_resource("resC", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resD = make_resource("resD", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resE = make_resource("resE", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resF = make_resource("resF", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resG = make_resource("resG", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resH = make_resource("resH", 100.0, 1.0, 0.01, 0.05, ea);
-        //        resource_ptr_type resI = make_resource("resI", 100.0, 1.0, 0.01, 0.05, ea);
-        
         
         // initial amount (unit), inflow (unit), outflow (percentage), percent consumed, ea
         resource_ptr_type resA = make_resource("resA", init_amt, inflow, outflow, frac, ea);
@@ -156,7 +150,7 @@ struct lifecycle : public default_lifecycle {
         task_nor->consumes(resG);
         task_xor->consumes(resH);
         task_equals->consumes(resI);
-
+        
         
         
     }
@@ -182,8 +176,8 @@ typedef digital_evolution
 < lifecycle
 , recombination::asexual
 , round_robin
-, multibirth_selfrep_not_remote_ancestor
-, empty_facing_neighbor
+, multibirth_selfrep_not_remote_ancestor // the ancestor does one task repeatedly until it replicate and form another organism
+, empty_facing_neighbor   // Kate - this controls whether a cell can replicate over another cell
 , dont_stop
 , generate_single_ancestor
 > sea_type;
@@ -198,7 +192,6 @@ typedef metapopulation
 , ancestors::default_subpopulation
 , dont_stop
 , fill_metapopulation
-//, one_metapopulation
 , default_lifecycle
 , subpop_trait
 > mea_type;
@@ -212,14 +205,14 @@ template <typename EA>
 class cli : public cmdline_interface<EA> {
 public:
     virtual void gather_options() {
-        add_option<SPATIAL_X>(this);
-        add_option<SPATIAL_Y>(this);
-        add_option<METAPOPULATION_SIZE>(this);
-        add_option<POPULATION_SIZE>(this);
+        add_option<SPATIAL_X>(this); // number of cells an organism is in x dimension (usually 5)
+        add_option<SPATIAL_Y>(this); // number of cells an organism is in y dimension (usually 5)
+        add_option<METAPOPULATION_SIZE>(this); // number or organisms (usually 1000)
+        add_option<POPULATION_SIZE>(this); // max number of cells in an organism (usually 25)
         add_option<REPRESENTATION_SIZE>(this);
         add_option<SCHEDULER_TIME_SLICE>(this);
         add_option<SCHEDULER_RESOURCE_SLICE>(this);
-        add_option<MUTATION_PER_SITE_P>(this);
+        add_option<MUTATION_PER_SITE_P>(this); // used to configure probability of mutation during cell replication
         add_option<MUTATION_INSERTION_P>(this);
         add_option<MUTATION_DELETION_P>(this);
         add_option<RUN_UPDATES>(this);
@@ -227,19 +220,24 @@ public:
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
         add_option<MUTATION_UNIFORM_INT_MIN>(this);
-        add_option<MUTATION_UNIFORM_INT_MAX>(this);
+        add_option<MUTATION_UNIFORM_INT_MAX>(this); // must be the number of instructions used. Otherwise if > errors.
         
         add_option<ANALYSIS_INPUT>(this);
         
         
         // ts specific options
-        add_option<TASK_SWITCHING_COST>(this);
-        add_option<GERM_MUTATION_PER_SITE_P>(this);
-        add_option<GROUP_REP_THRESHOLD>(this);
-        add_option<IND_REP_THRESHOLD>(this);
+        add_option<TASK_SWITCHING_COST>(this); // set to 0 for mt projects, but useful if you want to study task switching
+        add_option<GERM_MUTATION_PER_SITE_P>(this); // the mutation rate used for organismal replication
+        add_option<GROUP_REP_THRESHOLD>(this); // the number of resources required for a group (really an organism) to replicate
         
-        add_option<TASK_MUTATION_PER_SITE_P>(this);
-        add_option<NOT_MUTATION_MULT>(this);
+        // Austin - this is the config that when raised high enough results in multicells reverting to unicells
+        add_option<IND_REP_THRESHOLD>(this); // the number of resources required for an individual (cell) to replicate
+        
+        // dirty work mutation stuff
+        add_option<TASK_MUTATION_PER_SITE_P>(this); // the base rate of mutations for a task
+        // each task has it's own mutation rate which is the base rate * its multiplication rate
+        // so for example, with base rate b, task NOT's rate would be NOT_MUTATION_MULT * b
+        add_option<NOT_MUTATION_MULT>(this); // normally set to 0
         add_option<NAND_MUTATION_MULT>(this);
         add_option<AND_MUTATION_MULT>(this);
         add_option<ORNOT_MUTATION_MULT>(this);
@@ -255,57 +253,34 @@ public:
         add_option<RES_FRACTION_CONSUMED>(this);
         add_option<COST_RAMP>(this);
         add_option<COST_START_UPDATE>(this);
-
+        
         add_option<ARCHIVE_INPUT>(this);
         add_option<ARCHIVE_OUTPUT>(this);
-        add_option<ARCHIVE_MARK>(this);
-        add_option<ARCHIVE_OUTPUT_SIZE>(this);
-        add_option<LOD_START_ANALYSIS>(this);
-        add_option<LOD_END_ANALYSIS>(this);
-        add_option<ANALYSIS_LOD_REPS>(this);
-        add_option<ANALYSIS_LOD_START_COST>(this);
+/*add_option<ARCHIVE_MARK>(this);
+#        add_option<ARCHIVE_OUTPUT_SIZE>(this);
+#       add_option<LOD_START_ANALYSIS>(this);
+#        add_option<LOD_END_ANALYSIS>(this);*/
     }
     
     virtual void gather_tools() {
+        // these are examples for when you need tools - they can be used to reload populations, reload
+        // line of descents and then perform further analyses.
         
-//        add_tool<movie>(this);
-//        add_tool<ealib::analysis::lod_knockouts>(this);
-//        add_tool<ealib::analysis::lod_knockouts2>(this);
-//
-//        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
-//        add_tool<ealib::analysis::lod_report_gs>(this);
-//        add_tool<ealib::analysis::lod_transition>(this);
-//        add_tool<ealib::analysis::lod_gls_circle_square_plot>(this);
-//        add_tool<ealib::analysis::movie_gs>(this);
-//        add_tool<ealib::analysis::task_profile2>(this);
-//        add_tool<ealib::analysis::temporal_poly>(this);
-//        add_tool<ealib::analysis::dom_mutational_analysis>(this);
-//        add_tool<ealib::analysis::merge_archives>(this);
-//        add_tool<ealib::analysis::archive_population>(this);
-//        add_tool<ealib::analysis::lod_archive_reversion>(this);
-//        add_tool<ealib::analysis::archive_dominant>(this);
-//        add_tool<ealib::analysis::lod_last_knockouts_uni_analysis>(this);
-//        add_tool<ealib::analysis::lod_last_knockouts_line>(this);
-//        add_tool<ealib::analysis::lod_archive_trans>(this);
-//        add_tool<ealib::analysis::lod_forced_uni>(this);
-        add_tool<ealib::analysis::lod_fitness>(this);
-        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
-        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
-        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
-        add_tool<ealib::analysis::lod_final_entrench>(this);
+        //add_tool<movie>(this);
+        //add_tool<ealib::analysis::lod_knockouts>(this);
 
-
+        
     }
     
     virtual void gather_events(EA& ea) {
-        add_event<mt_gls_propagule>(ea);
+        add_event<mt_gls_propagule>(ea); // this event defines how organism replication occurs.
+        
+        // this is used for line of descent tracking. It's memory expensive. Normally I run with 1 gig. If
+        // I use LOD - it ups it to 4 gigs.
         add_event<datafiles::mrca_lineage>(ea);
         add_event<subpopulation_founder_event>(ea);
         add_event<task_performed_tracking>(ea);
-        //add_event<task_switch_tracking>(ea);
-        add_event<dol_tracking>(ea);
-        //add_event<ealib::analysis::mark_tracking>(ea);
-        
+
         
         
     }

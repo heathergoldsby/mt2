@@ -1,50 +1,48 @@
+/* gls.cpp
+ *
+ * This file is part of EALife.
+ *
+ * Copyright 2012 David B. Knoester, Heather J. Goldsby.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "gls.h"
+//#include "subpopulation_founder.h"
+#include <ea/digital_evolution/ancestors/selfrep_not_ancestor.h>
+#include <ea/subpopulation_founder.h>
+#include <ea/digital_evolution/utils/resource_consumption.h>
+#include <ea/digital_evolution/utils/task_switching.h>
 #include <ea/digital_evolution.h>
 #include <ea/cmdline_interface.h>
-#include <ea/subpopulation_founder.h>
 #include <ea/line_of_descent.h>
-#include <ea/analysis/archive.h>
-//#include <ea/generational_models/periodic_competition.h>
-//#include <ea/generational_models/moran_process.h>
-//#include <ea/selection/rank.h>
-//#include <ea/datafiles/fitness.h>
-//#include <ea/digital_evolution/extra_instruction_sets/matrix.h>
-#include <ea/metapopulation.h>
-#include "gls.h"
-
-//#include "evolved_striped_ancestor2.h"
-//#include "multibirth_not_nand_prop_ancestor.h"
-
-//#include "subpopulation_propagule_split.h"
-
-#include "movie.h"
-//#include "ko.h"
-#include "mt_propagule_orig.h"
-#include "multi_birth_selfrep_not_remote_ancestor.h"
-#include "lod_knockouts.h"
-#include "lod_knockouts_fitness.h"
-
-#include "mt_analysis.h"
-
-
-
-
-
-using namespace ealib;
-
-//#include "movie_evo_plane.h"
-
+#include <ea/generational_models/periodic_competition.h>
+#include <ea/generational_models/moran_process.h>
+#include <ea/datafiles/fitness.h>
+#include <ea/line_of_descent.h>
 
 //! Configuration object for an EA.
 struct lifecycle : public default_lifecycle {
-    
-    //! Called as the final step of EA construction (must not depend on configuration parameters)
+    /*! Called after EA initialization.
+     
+     This is a good place to handle programmatic setup tasks.  E.g., adding
+     instructions to a digital evolution ISA, loading external data files,
+     and the like.
+     */
     template <typename EA>
     void after_initialization(EA& ea) {
-        if(ea.isa().size()) {
-            return;
-        }
-        
-        using namespace instructions;
+        using namespace ealib::instructions;
         append_isa<nop_a>(0,ea);
         append_isa<nop_b>(0,ea);
         append_isa<nop_c>(0,ea);
@@ -58,39 +56,32 @@ struct lifecycle : public default_lifecycle {
         append_isa<swap>(ea);
         append_isa<inc>(ea);
         append_isa<dec>(ea);
-        append_isa<tx_msg>(ea);
         append_isa<tx_msg_check_task>(ea);
+        append_isa<tx_msg>(ea);
         append_isa<rx_msg>(ea);
         append_isa<bc_msg>(ea);
-        append_isa<bc_msg_check_task>(ea);
         append_isa<rotate>(ea);
         append_isa<rotate_cw>(ea);
         append_isa<rotate_ccw>(ea);
         append_isa<if_less>(ea);
         append_isa<h_alloc>(ea);
         append_isa<h_copy>(ea);
-        append_isa<h_divide_local>(ea);
+        append_isa<h_divide>(ea);
         append_isa<fixed_input>(ea);
         append_isa<output>(ea);
         append_isa<donate_res_to_group>(ea);
+        append_isa<get_xy>(ea);
         append_isa<if_equal>(ea);
         append_isa<if_not_equal>(ea);
         append_isa<jump_head>(ea);
-        append_isa<is_neighbor>(ea);
-        append_isa<h_divide_remote>(ea);
         append_isa<become_soma>(ea);
         append_isa<if_germ>(ea);
         append_isa<if_soma>(ea);
-        append_isa<if_res_more_than_thresh>(ea);
-        append_isa<if_res_less_than_thresh>(ea);
+        
         
         add_event<task_resource_consumption>(ea);
-        add_event<task_switching_cost>(ea);
-        add_event<task_profile_tracking>(ea);
-        add_event<task_profile_birth_event>(ea);
-        
-
-        add_event<ts_birth_event>(ea);
+        //add_event<task_switching_cost>(this, ea);
+        //add_event<ts_birth_event>(this,ea);
         add_event<task_mutagenesis>(ea);
         add_event<gs_inherit_event>(ea);
         
@@ -156,7 +147,7 @@ struct lifecycle : public default_lifecycle {
         task_nor->consumes(resG);
         task_xor->consumes(resH);
         task_equals->consumes(resI);
-
+        
         
         
     }
@@ -175,34 +166,30 @@ struct subpop_trait : subpopulation_founder_trait<T>, fitness_trait<T> {
     }
 };
 
-
-
-
+/*! Artificial life simulation definition.
+ */
 typedef digital_evolution
 < lifecycle
 , recombination::asexual
 , round_robin
-, multibirth_selfrep_not_remote_ancestor
-, empty_facing_neighbor
+, selfrep_not_ancestor
+, empty_neighbor
 , dont_stop
 , generate_single_ancestor
 > sea_type;
-
 
 typedef metapopulation
 < sea_type
 , quiet_nan
 , mutation::operators::no_mutation
-, quiet_nan
+, recombination::no_recombination
 , generational_models::isolated_subpopulations
 , ancestors::default_subpopulation
 , dont_stop
 , fill_metapopulation
-//, one_metapopulation
 , default_lifecycle
 , subpop_trait
 > mea_type;
-
 
 
 
@@ -211,34 +198,40 @@ typedef metapopulation
 template <typename EA>
 class cli : public cmdline_interface<EA> {
 public:
+    
+    
     virtual void gather_options() {
         add_option<SPATIAL_X>(this);
         add_option<SPATIAL_Y>(this);
         add_option<METAPOPULATION_SIZE>(this);
         add_option<POPULATION_SIZE>(this);
         add_option<REPRESENTATION_SIZE>(this);
-        add_option<SCHEDULER_TIME_SLICE>(this);
         add_option<SCHEDULER_RESOURCE_SLICE>(this);
+        add_option<SCHEDULER_TIME_SLICE>(this);
         add_option<MUTATION_PER_SITE_P>(this);
         add_option<MUTATION_INSERTION_P>(this);
         add_option<MUTATION_DELETION_P>(this);
+        add_option<MUTATION_UNIFORM_INT_MIN>(this);
+        add_option<MUTATION_UNIFORM_INT_MAX>(this);
         add_option<RUN_UPDATES>(this);
         add_option<RUN_EPOCHS>(this);
         add_option<RNG_SEED>(this);
         add_option<RECORDING_PERIOD>(this);
-        add_option<MUTATION_UNIFORM_INT_MIN>(this);
-        add_option<MUTATION_UNIFORM_INT_MAX>(this);
-        
-        add_option<ANALYSIS_INPUT>(this);
-        
         
         // ts specific options
-        add_option<TASK_SWITCHING_COST>(this);
-        add_option<GERM_MUTATION_PER_SITE_P>(this);
         add_option<GROUP_REP_THRESHOLD>(this);
-        add_option<IND_REP_THRESHOLD>(this);
+        add_option<TASK_SWITCHING_COST>(this);
+        add_option<LAST_TASK>(this);
+        add_option<NUM_SWITCHES>(this);
+        add_option<GERM_MUTATION_PER_SITE_P>(this);
         
+        
+        // gls specific options
         add_option<TASK_MUTATION_PER_SITE_P>(this);
+        //        add_option<GERM_MUTATION_PER_SITE_P>(this);
+        //        add_option<GROUP_REP_THRESHOLD>(this);
+        
+        // gls mutation multipliers
         add_option<NOT_MUTATION_MULT>(this);
         add_option<NAND_MUTATION_MULT>(this);
         add_option<AND_MUTATION_MULT>(this);
@@ -248,66 +241,26 @@ public:
         add_option<NOR_MUTATION_MULT>(this);
         add_option<XOR_MUTATION_MULT>(this);
         add_option<EQUALS_MUTATION_MULT>(this);
+        add_option<NUM_PROPAGULE_CELL>(this);
+        
         
         add_option<RES_INITIAL_AMOUNT>(this);
         add_option<RES_INFLOW_AMOUNT>(this);
         add_option<RES_OUTFLOW_FRACTION>(this);
         add_option<RES_FRACTION_CONSUMED>(this);
-        add_option<COST_RAMP>(this);
-        add_option<COST_START_UPDATE>(this);
 
-        add_option<ARCHIVE_INPUT>(this);
-        add_option<ARCHIVE_OUTPUT>(this);
-        add_option<ARCHIVE_MARK>(this);
-        add_option<ARCHIVE_OUTPUT_SIZE>(this);
-        add_option<LOD_START_ANALYSIS>(this);
-        add_option<LOD_END_ANALYSIS>(this);
-        add_option<ANALYSIS_LOD_REPS>(this);
-        add_option<ANALYSIS_LOD_START_COST>(this);
     }
     
     virtual void gather_tools() {
-        
-//        add_tool<movie>(this);
-//        add_tool<ealib::analysis::lod_knockouts>(this);
-//        add_tool<ealib::analysis::lod_knockouts2>(this);
-//
-//        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
-//        add_tool<ealib::analysis::lod_report_gs>(this);
-//        add_tool<ealib::analysis::lod_transition>(this);
-//        add_tool<ealib::analysis::lod_gls_circle_square_plot>(this);
-//        add_tool<ealib::analysis::movie_gs>(this);
-//        add_tool<ealib::analysis::task_profile2>(this);
-//        add_tool<ealib::analysis::temporal_poly>(this);
-//        add_tool<ealib::analysis::dom_mutational_analysis>(this);
-//        add_tool<ealib::analysis::merge_archives>(this);
-//        add_tool<ealib::analysis::archive_population>(this);
-//        add_tool<ealib::analysis::lod_archive_reversion>(this);
-//        add_tool<ealib::analysis::archive_dominant>(this);
-//        add_tool<ealib::analysis::lod_last_knockouts_uni_analysis>(this);
-//        add_tool<ealib::analysis::lod_last_knockouts_line>(this);
-//        add_tool<ealib::analysis::lod_archive_trans>(this);
-//        add_tool<ealib::analysis::lod_forced_uni>(this);
-        add_tool<ealib::analysis::lod_fitness>(this);
-        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
-        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
-        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
-        add_tool<ealib::analysis::lod_final_entrench>(this);
-
-
     }
     
     virtual void gather_events(EA& ea) {
-        add_event<mt_gls_propagule>(ea);
-        add_event<datafiles::mrca_lineage>(ea);
-        add_event<subpopulation_founder_event>(ea);
+        add_event<gls_replication_ps>(ea);
+        
+        //        add_event<ts_replication>(this,ea);
         add_event<task_performed_tracking>(ea);
-        //add_event<task_switch_tracking>(ea);
-        add_event<dol_tracking>(ea);
-        //add_event<ealib::analysis::mark_tracking>(ea);
-        
-        
-        
-    }
+        add_event<task_switch_tracking>(ea);
+        //add_event<subpopulation_founder_event>(ea);
+    };
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, cli);

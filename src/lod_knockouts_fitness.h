@@ -25,6 +25,9 @@ LIBEA_MD_DECL(LOD_START_ANALYSIS, "ea.mt.lod_start_analysis", int);
 LIBEA_MD_DECL(LOD_END_ANALYSIS, "ea.mt.lod_end_analysis", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_REPS, "ea.mt.lod_analysis_reps", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_START_COST, "ea.mt.lod_start_cost", int);
+LIBEA_MD_DECL(ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE, "ea.mt.lod_timepoint_to_analyze", int);
+
+
 
 
 
@@ -982,7 +985,7 @@ namespace ealib {
                 
                 
             }
-        LIBEA_ANALYSIS_TOOL(lod_final_entrench) {
+        LIBEA_ANALYSIS_TOOL(lod_entrench) {
             
             datafile df("lod_entrench_all.dat");
             df.add_field("cost")
@@ -1007,20 +1010,46 @@ namespace ealib {
             .add_field("generation_diff")
             .add_field("workload")
             .add_field("workload_propagule_ineligible")
+            .add_field("reverted")
             ;
             
             int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);
-            int start_cost = get<ANALYSIS_LOD_START_COST>(ea,0);
+            int start_mult = get<TISSUE_ACCRETION_MULT>(ea,0);
+            int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+            
             int meta_size = 1000;
             int entrench_not_found = true;
             std::set<int> checked_nums;
             
+            
             line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-            typename line_of_descent<EA>::iterator i=lod.end(); --i;
+            typename line_of_descent<EA>::iterator i;
+            if (timepoint == 1) {
+                i = lod.end(); --i;
+            } else {
+                i=lod.begin(); i++;
+                // find the first to transition
+                for( ; i!=lod.end(); i++) {
+                    if (i->size() > 2) {
+                        break;
+                    }
+                }
+            }
+            
+        
+//            add_option<NOT_MUTATION_MULT>(this);
+//            add_option<NAND_MUTATION_MULT>(this);
+//            add_option<AND_MUTATION_MULT>(this);
+//            add_option<ORNOT_MUTATION_MULT>(this);
+//            add_option<OR_MUTATION_MULT>(this);
+//            add_option<ANDNOT_MUTATION_MULT>(this);
+//            add_option<NOR_MUTATION_MULT>(this);
+//            add_option<XOR_MUTATION_MULT>(this);
+//            add_option<EQUALS_MUTATION_MULT>(this);
 
             while (entrench_not_found) {
                 int revert_count = 0;
-                checked_nums.insert(start_cost);
+                checked_nums.insert(start_mult);
                 for (int nr = 0; nr < num_rep; nr++) {
                     // should define checkpoint + analysis input
                     //ea is the thing loaded from the checkpoint; EA is its type
@@ -1037,8 +1066,8 @@ namespace ealib {
                     typename EA::population_type init_mc;
                     for (int j=0; j<meta_size; ++j){
                         typename EA::individual_ptr_type control_mc = ea.make_individual(*i->traits().founder());
-                        put<IND_REP_THRESHOLD>(start_cost, *control_mc);
-                        put<COST_START_UPDATE>(get<COST_START_UPDATE>(ea,0), *control_mc);
+                        control_mc->initialize(metapop.md());
+                        put<TISSUE_ACCRETION_MULT>(start_mult, *control_mc);
                         control_mc->reset_rng(ea.rng().uniform_integer());
                         init_mc.insert(init_mc.end(),ea.make_individual(*control_mc));
                         if (j ==0) {
@@ -1053,6 +1082,8 @@ namespace ealib {
                     int max_update = 50000;
                     int cur_update = 0;
                     int exit = false;
+                    
+                    int exit_mean_size = 0;
                     
                     
                     while ((exit == false) &&
@@ -1082,20 +1113,18 @@ namespace ealib {
                                 organism_size += j->population().size();
                                 gen += get<IND_GENERATION>(*j);
                             }
-                            /*     .add_field("cost")
-                             .add_field("iteration")
-                             .add_field("update")
-                             .add_field("generation")
-                             .add_field("generation_diff")
-                             .add_field("workload")
-                             .add_field("workload_propagule_ineligible")*/
                             
                             float mean_gen = gen/metapop.size();
                             float mean_gen_diff = mean_gen - start_gen;
 
                             float mean_size = organism_size/metapop.size();
+                            if (mean_size < 2) {
+                                exit_mean_size++;
+                            } else {
+                                exit_mean_size = 0;
+                            }
                             
-                            df.write(start_cost)
+                            df.write(start_mult)
                             .write(nr)
                             .write(metapop.current_update())
                             .write(organism_size/metapop.size())
@@ -1106,16 +1135,20 @@ namespace ealib {
                             .write(germ_workload/num_germ)
                             .endl();
                             
-                            if ((mean_size < 2) ||
+                            if ((exit_mean_size > 5) ||
                                 (mean_gen_diff > 100) ||
-                                ((num_germ/metapop.size()) < 1)) {
+                                ((cur_update > 10000) && (mean_gen_diff < 10)) ||
+                                ((num_germ/metapop.size()) < 0.25)) {
+                                int reverted = 0;
                                 
-                                if ((mean_size < 2) ||
-                                    (mean_gen_diff > 100)) {
-                                        revert_count += 1;
+                                if ((exit_mean_size > 5) ||
+                                    ((cur_update > 10000) && (mean_gen_diff < 10))  ||
+                                    ((num_germ/metapop.size()) < 0.25)) {
+                                    revert_count += 1;
+                                    reverted = 1;
                                 }
                                 exit = true;
-                                df2.write(start_cost)
+                                df2.write(start_mult)
                                 .write(nr)
                                 .write(metapop.current_update())
                                 .write(organism_size/metapop.size())
@@ -1124,23 +1157,44 @@ namespace ealib {
                                 .write(mean_gen_diff)
                                 .write(total_workload/organism_size)
                                 .write(germ_workload/num_germ)
+                                .write(reverted)
+                                .endl();
+                            }
+                            if (cur_update == max_update){
+                                df2.write(start_mult)
+                                .write(nr)
+                                .write(metapop.current_update())
+                                .write(organism_size/metapop.size())
+                                .write(num_germ/metapop.size())
+                                .write(mean_gen)
+                                .write(mean_gen_diff)
+                                .write(total_workload/organism_size)
+                                .write(germ_workload/num_germ)
+                                .write("2")
                                 .endl();
                             }
                         }
                     }
                     
                 }
-                if (revert_count < 1) {
-                    start_cost += 5;
-                    if (checked_nums.find(start_cost) != checked_nums.end()){
+                if (revert_count <= (num_rep / 2)) {
+                    start_mult += 2;
+                    if (checked_nums.find(start_mult) != checked_nums.end()){
                         entrench_not_found = false;
                     }
                 } else {
-                    start_cost -= 5;
-                    if ((checked_nums.find(start_cost) != checked_nums.end()) ||
-                        (start_cost < 0)){
+                    if (start_mult == 2){
+                        start_mult = 1;
+                    } else if (start_mult == 1) {
+                        start_mult = 0;
+                    } else {
+                        start_mult -= 2;
+                    }
+                    if ((checked_nums.find(start_mult) != checked_nums.end()) ||
+                        (start_mult < 0)) {
                         entrench_not_found = false;
                     }
+                    
                 }
             }// end while
         }

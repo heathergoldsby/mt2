@@ -193,6 +193,7 @@ struct task_mutagenesis : reaction_event<EA> {
         
         double mult = get<TASK_MUTATION_MULT>(*task);
         double prob = get<TASK_MUTATION_PER_SITE_P>(ea) * mult;
+        
         if (prob > 0) {
             configurable_per_site m(prob);
             mutate(ind,m,ea);

@@ -1071,7 +1071,7 @@ namespace ealib {
                     
                     add_event<mt_gls_propagule>(metapop);
                     
-                    int max_update = 50000;
+                    int max_update = 200000;
                     int cur_update = 0;
                     int exit = false;
                     
@@ -1110,11 +1110,12 @@ namespace ealib {
                             float mean_gen_diff = mean_gen - start_gen;
 
                             float mean_size = organism_size/metapop.size();
+                            if (metapop.current_update() > 5000){
                             if (mean_size < 2) {
                                 exit_mean_size++;
                             } else {
                                 exit_mean_size = 0;
-                            }
+                            }}
                             
                             df.write(start_mult)
                             .write(nr)
@@ -1128,14 +1129,10 @@ namespace ealib {
                             .endl();
                             
                             if ((exit_mean_size > 5) ||
-                                (mean_gen_diff > 100) ||
-                                ((cur_update > 10000) && (mean_gen_diff < 10)) ||
-                                ((num_germ/metapop.size()) < 0.25)) {
+                                (mean_gen_diff > 100))  {
                                 int reverted = 0;
                                 
-                                if ((exit_mean_size > 5) ||
-                                    ((cur_update > 10000) && (mean_gen_diff < 10))  ||
-                                    ((num_germ/metapop.size()) < 0.25)) {
+                                if (exit_mean_size > 5)  {
                                     revert_count += 1;
                                     reverted = 1;
                                 }

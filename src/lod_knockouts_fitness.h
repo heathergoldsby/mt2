@@ -1046,6 +1046,7 @@ namespace ealib {
                     //typename EA::md_type md(ea.md());
                     
                     metapop.initialize(ea.md());
+                    put<TISSUE_ACCRETION_MULT>(start_mult, metapop);
                     
                     // Keep the seed the same for trial 0.
                     int new_seed = ea.rng().uniform_integer();

@@ -1193,11 +1193,10 @@ namespace ealib {
     
     datafile df("lod_size.dat");
     df.add_field("time")
-    .add_field("update")
     .add_field("organism_size")
     .add_field("num_germ")
     .add_field("workload")
-    .add_field("total_workload")
+    .add_field("germ_workload")
     ;
     
         

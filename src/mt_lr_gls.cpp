@@ -3,18 +3,10 @@
 #include <ea/subpopulation_founder.h>
 #include <ea/line_of_descent.h>
 #include <ea/analysis/archive.h>
-//#include <ea/generational_models/periodic_competition.h>
-//#include <ea/generational_models/moran_process.h>
-//#include <ea/selection/rank.h>
-//#include <ea/datafiles/fitness.h>
-//#include <ea/digital_evolution/extra_instruction_sets/matrix.h>
 #include <ea/metapopulation.h>
 #include "gls.h"
 
-//#include "evolved_striped_ancestor2.h"
-//#include "multibirth_not_nand_prop_ancestor.h"
 
-//#include "subpopulation_propagule_split.h"
 
 #include "movie.h"
 //#include "ko.h"
@@ -295,6 +287,7 @@ public:
         add_tool<ealib::analysis::lod_fitness_at_trans>(this);
         add_tool<ealib::analysis::lod_fitness_start_stop>(this);
         add_tool<ealib::analysis::lod_entrench>(this);
+        add_tool<ealib::analysis::lod_size>(this);
 
 
     }

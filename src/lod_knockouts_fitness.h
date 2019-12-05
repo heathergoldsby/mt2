@@ -714,7 +714,7 @@ namespace ealib {
                             
                             df.write("trans")
                             .write("uni")
-                            .write(uni_count)
+                            .write(num_uni)
                             .write(nr)
                             .write(cur_update)
                             .write(total_workload)
@@ -731,7 +731,7 @@ namespace ealib {
                 
             }
             df2.write("trans")
-            .write(uni_count)
+            .write(num_uni)
             .write(num_uni_viable)
             .write(num_uni_inviable)
             .write(birth_up)

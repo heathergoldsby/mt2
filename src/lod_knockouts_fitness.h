@@ -26,7 +26,6 @@ LIBEA_MD_DECL(LOD_END_ANALYSIS, "ea.mt.lod_end_analysis", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_REPS, "ea.mt.lod_analysis_reps", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_START_COST, "ea.mt.lod_start_cost", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE, "ea.mt.lod_timepoint_to_analyze", int);
-LIBEA_MD_DECL(TISSUE_ACCRETION_END_MULT, "ea.mt.tissue_accretion_end_mult", int);
 
 
 
@@ -1014,9 +1013,12 @@ namespace ealib {
             ;
             
             int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);
-            int start_mult = get<TISSUE_ACCRETION_MULT>(ea,0);
-            int end_mult = get<TISSUE_ACCRETION_END_MULT>(ea,0);
-
+            int mult = get<TISSUE_ACCRETION_MULT>(ea,0);
+            int start_mult = mult - 6;
+            int end_mult = mult + 6;
+            if (start_mult < 0) {
+                start_mult = 0; 
+            }
             int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
             
             int meta_size = 1000;

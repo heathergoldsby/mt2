@@ -258,7 +258,6 @@ public:
         add_option<ANALYSIS_LOD_START_COST>(this);
         add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
         add_option<TISSUE_ACCRETION_MULT>(this);
-        add_option<TISSUE_ACCRETION_END_MULT>(this);
     }
     
     virtual void gather_tools() {

@@ -1171,6 +1171,7 @@ namespace ealib {
                 }
                 if (start_mult <= end_mult) {
                     start_mult += 2;
+                } else {
                     entrench_not_found = false;
                 }
                 /*

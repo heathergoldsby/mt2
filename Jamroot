@@ -19,12 +19,12 @@ exe avida-logic9 :
 
 install dist : avida-logic9 : <location>$(HOME)/bin ;
 
-exe mt :
-    src/mt.cpp
+exe mt_lr_gls_dol_control :
+    src/mt_lr_gls_dol_control.cpp
     /libea//libea_runner
     : <link>static ;
 
-install dist : mt : <location>$(HOME)/bin ;
+install dist : mt_lr_gls_dol_control : <location>$(HOME)/bin ;
 
 
 exe mt_lr_gls :

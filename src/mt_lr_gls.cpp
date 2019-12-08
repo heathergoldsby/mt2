@@ -258,6 +258,8 @@ public:
         add_option<ANALYSIS_LOD_START_COST>(this);
         add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
         add_option<TISSUE_ACCRETION_MULT>(this);
+        add_option<TISSUE_ACCRETION_ADD>(this);
+
     }
     
     virtual void gather_tools() {
@@ -288,6 +290,7 @@ public:
         add_tool<ealib::analysis::lod_fitness_start_stop>(this);
         add_tool<ealib::analysis::lod_entrench>(this);
         add_tool<ealib::analysis::lod_size>(this);
+        add_tool<ealib::analysis::lod_entrench_add>(this);
 
 
     }

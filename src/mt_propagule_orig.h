@@ -39,6 +39,8 @@ LIBEA_MD_DECL(LAST_REPLICATION_STATE, "ea.mt.last_rep_state", int); // 0 uni, 1 
 LIBEA_MD_DECL(REPLICATION_STATE_INDEX, "ea.mt.rep_state_index", int); // increments based on number of flips
 LIBEA_MD_DECL(GENERATION, "ea.mt.rep_state_index", int); //
 LIBEA_MD_DECL(TISSUE_ACCRETION_MULT, "ea.mt.tissue_accretion_mult", int); //
+LIBEA_MD_DECL(TISSUE_ACCRETION_ADD, "ea.mt.tissue_accretion_add", int); //
+
 LIBEA_MD_DECL(NUM_CELLS_ACCRETED, "ea.mt.num_cells_accreted", int); //
 LIBEA_MD_DECL(TIME_DELAY, "ea.mt.time_delay", int); //
 
@@ -95,6 +97,8 @@ DIGEVO_INSTRUCTION_DECL(h_divide_remote) {
             // set rest to zero
             int num_cells_accreted = get<NUM_CELLS_ACCRETED>(ea, 0);
             int time_delay = get<TISSUE_ACCRETION_MULT>(ea,0) * num_cells_accreted;
+            time_delay += get<TISSUE_ACCRETION_ADD>(ea,0);
+
             put<TIME_DELAY>(time_delay, ea);
             put<NUM_CELLS_ACCRETED>(0, ea);
             int res_amt = get<GROUP_RESOURCE_UNITS>(ea) - get<GROUP_REP_THRESHOLD>(ea, 0.0);

@@ -35,7 +35,8 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Users/hjg/Desktop/code/mt2/etc"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -50,6 +51,20 @@
             ReferencedContainer = "container:mt2.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-c major_transitions.cfg"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-l 1088-checkpoint-1000000.xml.gz --analyze lod_entrench --ea.analysis.input.filename 1088-lod-1000000.xml.gz  --ea.mt.lod_analysis_reps=1  --ea.mt.lod_start_cost=25 --ea.mt.tissue_accretion_mult=8 --ea.mt.lod_timepoint_to_analyze=1"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-l checkpoint-1000000.xml.gz --analyze lod_entrench --ea.analysis.input.filename lod-1000000.xml.gz --ea.mt.lod_analysis_reps=1 --ea.mt.tissue_accretion_mult=10 --ea.mt.cost_start_update=0 --ea.mt.lod_timepoint_to_analyze=1"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

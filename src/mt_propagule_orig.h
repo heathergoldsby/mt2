@@ -97,7 +97,9 @@ DIGEVO_INSTRUCTION_DECL(h_divide_remote) {
             // set rest to zero
             int num_cells_accreted = get<NUM_CELLS_ACCRETED>(ea, 0);
             int time_delay = get<TISSUE_ACCRETION_MULT>(ea,0) * num_cells_accreted;
-            time_delay += get<TISSUE_ACCRETION_ADD>(ea,0);
+            if (ea.size() > 1){
+                time_delay += get<TISSUE_ACCRETION_ADD>(ea,0);
+            }
 
             put<TIME_DELAY>(time_delay, ea);
             put<NUM_CELLS_ACCRETED>(0, ea);

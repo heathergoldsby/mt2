@@ -1424,7 +1424,7 @@ namespace ealib {
                     
                 }
                 
-                add_ent += 5;
+                add_ent *= 2;
                 
             }// end while
         }

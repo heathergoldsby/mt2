@@ -1429,7 +1429,8 @@ namespace ealib {
 LIBEA_ANALYSIS_TOOL(lod_dol) {
     
     datafile df("lod_dol.dat");
-    df.add_field("tech_rep")
+    df.add_field("timepoint")
+    .add_field("tech_rep")
     .add_field("size")
     .add_field("germ_size")
     .add_field("total_workload")
@@ -1518,7 +1519,7 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         }
         
         
-        df.write("timepoint")
+        df.write(timepoint)
         .write(nr)
         .write(total_size)
         .write(germ_count)

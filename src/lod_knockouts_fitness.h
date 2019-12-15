@@ -1426,6 +1426,197 @@ namespace ealib {
                 
             }// end while
         }
+    
+    
+    LIBEA_ANALYSIS_TOOL(lod_entrench_mc_cost) {
+            
+            datafile df("lod_entrench_all.dat");
+            df.add_field("cost")
+            .add_field("iteration")
+            .add_field("update")
+            .add_field("organism_size")
+            .add_field("num_germ")
+            .add_field("generation")
+            .add_field("generation_diff")
+            .add_field("workload")
+            .add_field("workload_propagule_ineligible")
+            ;
+            
+            
+            datafile df2("lod_entrench_final.dat");
+            df2.add_field("cost")
+            .add_field("iteration")
+            .add_field("update")
+            .add_field("organism_size")
+            .add_field("num_germ")
+            .add_field("generation")
+            .add_field("generation_diff")
+            .add_field("workload")
+            .add_field("workload_propagule_ineligible")
+            .add_field("reverted")
+            ;
+            
+            int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);
+            int mc_res = get<GROUP_REP_THRESHOLD>(ea);
+            int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+            
+            int meta_size = 1000;
+            int entrench_not_found = true;
+            std::set<int> checked_nums;
+            
+            
+            line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
+            typename line_of_descent<EA>::iterator i;
+            if (timepoint == 1) {
+                i = lod.end(); --i;
+            } else {
+                i=lod.begin(); i++;
+                // find the first to transition
+                for( ; i!=lod.end(); i++) {
+                    if (i->size() > 2) {
+                        break;
+                    }
+                }
+            }
+            
+            while (entrench_not_found) {
+                int revert_count = 0;
+                for (int nr = 0; nr < num_rep; nr++) {
+                    // should define checkpoint + analysis input
+                    //ea is the thing loaded from the checkpoint; EA is its type
+                    EA metapop; // a new EA
+                    
+                    metapop.initialize(ea.md());
+                    put<GROUP_REP_THRESHOLD>(mc_res, metapop);
+                    
+                    int new_seed = ea.rng().uniform_integer();
+                    put<RNG_SEED>(new_seed, metapop);
+                    metapop.reset_rng(new_seed);
+                    
+                    float start_gen = 0;
+                    typename EA::population_type init_mc;
+                    for (int j=0; j<meta_size; ++j){
+                        typename EA::individual_ptr_type control_mc = metapop.make_individual(*i->traits().founder());
+                        control_mc->initialize(metapop.md());
+                        put<GROUP_REP_THRESHOLD>(mc_res, *control_mc);
+                        control_mc->reset_rng(metapop.rng().uniform_integer());
+                        init_mc.insert(init_mc.end(),metapop.make_individual(*control_mc));
+                        if (j ==0) {
+                            start_gen = get<IND_GENERATION>(*control_mc);
+                        }
+                    }
+                    
+                    std::swap(metapop.population(), init_mc);
+                    
+                    add_event<mt_gls_propagule>(metapop);
+                    
+                    int max_update = 200000;
+                    int cur_update = 0;
+                    int exit = false;
+                    
+                    int exit_mean_size = 0;
+                    
+                    
+                    while ((exit == false) &&
+                           (cur_update < max_update)){
+                        metapop.update();
+                        ++cur_update;
+                        
+                        if ((cur_update % 100)==0) {
+                            
+                            float total_workload = 0;
+                            float germ_workload = 0;
+                            float organism_size = 0;
+                            float num_germ = 0;
+                            float gen = 0;
+                            
+                            typedef typename EA::subpopulation_type::population_type subpop_type;
+                            
+                            for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
+                                for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
+                                    typename EA::subpopulation_type::individual_type& org=**m;
+                                    total_workload += get<WORKLOAD>(org, 0.0);
+                                    if (get<GERM_STATUS>(org, 1)) {
+                                        germ_workload += get<WORKLOAD>(org, 0.0);
+                                        num_germ += 1;
+                                    }
+                                }
+                                organism_size += j->population().size();
+                                gen += get<IND_GENERATION>(*j);
+                            }
+                            
+                            float mean_gen = gen/metapop.size();
+                            float mean_gen_diff = mean_gen - start_gen;
+
+                            float mean_size = organism_size/metapop.size();
+                            if (metapop.current_update() > 5000){
+                            if (mean_size < 2) {
+                                exit_mean_size++;
+                            } else {
+                                exit_mean_size = 0;
+                            }}
+                            
+                            df.write(mc_res)
+                            .write(nr)
+                            .write(metapop.current_update())
+                            .write(organism_size/metapop.size())
+                            .write(num_germ/metapop.size())
+                            .write(mean_gen)
+                            .write(mean_gen_diff)
+                            .write(total_workload/organism_size)
+                            .write(germ_workload/num_germ)
+                            .endl();
+                            
+                            if ((exit_mean_size > 5) ||
+                                (mean_gen_diff > 100))  {
+                                int reverted = 0;
+                                
+                                if (exit_mean_size > 5)  {
+                                    revert_count += 1;
+                                    reverted = 1;
+                                }
+                                exit = true;
+                                df2.write(mc_res)
+                                .write(nr)
+                                .write(metapop.current_update())
+                                .write(organism_size/metapop.size())
+                                .write(num_germ/metapop.size())
+                                .write(mean_gen)
+                                .write(mean_gen_diff)
+                                .write(total_workload/organism_size)
+                                .write(germ_workload/num_germ)
+                                .write(reverted)
+                                .endl();
+                            }
+                            if (cur_update == max_update){
+                                df2.write(mc_res)
+                                .write(nr)
+                                .write(metapop.current_update())
+                                .write(organism_size/metapop.size())
+                                .write(num_germ/metapop.size())
+                                .write(mean_gen)
+                                .write(mean_gen_diff)
+                                .write(total_workload/organism_size)
+                                .write(germ_workload/num_germ)
+                                .write("2")
+                                .endl();
+                            }
+                        }
+                    }
+                    
+                }
+                
+                mc_res -= 25;
+                if (mc_res == 0) {
+                    entrench_not_found = false;
+                }
+                
+                
+            }// end while
+        }
+    
+    
+    
 LIBEA_ANALYSIS_TOOL(lod_dol) {
     
     datafile df("lod_dol.dat");

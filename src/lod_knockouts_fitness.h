@@ -1620,20 +1620,23 @@ namespace ealib {
 LIBEA_ANALYSIS_TOOL(lod_dol) {
     
     datafile df("lod_dol.dat");
+
     df.add_field("timepoint")
-    .add_field("tech_rep")
-    .add_field("size")
-    .add_field("germ_size")
-    .add_field("total_workload")
-    .add_field("germ_workload")
-    .add_field("soma_workload")
-    ;
+    .write("tech_rep")
+    .write("num_propagules")
+    .write("cur_update")
+    .write("time_since_last_rep")
+    .write("multicell_size")
+    .write("germ_count")
+    .write("total_workload")
+    .write("germ_workload")
+    .write("soma_workload");
+    df.endl();
     
 
     int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
-    
-    int meta_size = 1000;
 
+    // get right lod member
     line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
     typename line_of_descent<EA>::iterator i;
     if (timepoint == 1) {
@@ -1647,80 +1650,68 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
             }
         }
     }
-        
-        int num_rep = 100;
-        for (int nr = 0; nr < num_rep; nr++) {
-        
-        
-        // should define checkpoint + analysis input
-        //ea is the thing loaded from the checkpoint; EA is its type
-        EA metapop; // a new EA
-        //typedef metadata md_type;
-        
-        typename EA::md_type md(ea.md());
-        // override md settings (pop size, geo, etc)
-        
-        
-        metapop.initialize(md);
-        put<METAPOPULATION_SIZE>(32, metapop);
-        put<RUN_UPDATES>(10000, metapop);
-        put<RNG_SEED>(nr, metapop);
-        
-        if (nr != 0) {
-            metapop.reset_rng(nr);
-        }
-        
-        typename EA::individual_ptr_type control_mc = ea.make_individual(*i->traits().founder());
-        put<COST_START_UPDATE>(get<COST_START_UPDATE>(ea,0), *control_mc);
-        
-        typename EA::population_type init_mc;
-        init_mc.insert(init_mc.end(),control_mc);
-        
-        std::swap(metapop.population(), init_mc);
-        
-        add_event<mt_gls_propagule>(metapop);
-        
-        int max_size = 32;
-        int max_update = 50000;
+
+
+    int num_rep = 100;
+    for (int nr = 0; nr < num_rep; nr++) {
+
+        typename EA::individual_ptr_type control_ea = ea.make_individual(*i->traits().founder());
+        control_ea->initialize(ea.md());
+        control_ea->reset_rng(ea.rng().uniform_integer());
+
+        // run until X replication events have 'happened'. Really, but happened, here we just add the resources back in.
         int cur_update = 0;
-        
-        while ((metapop.size() < max_size) &&
-               (cur_update < max_update)){
-            metapop.update();
+        int time_since_last_rep = 0;
+        int update_max = 2000;
+        int num_replications = 0;
+        //
+        while ((cur_update < update_max) && (num_replications < 5)) {
+            control_ea->update();
             ++cur_update;
-        }
-        
-        // get workload
-        float total_workload = 0;
-        float germ_workload = 0;
-        typedef typename EA::subpopulation_type::population_type subpop_type;
-        int germ_count = 0;
-        int total_size = 0;
-            
-        for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
-            for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
-                typename EA::subpopulation_type::individual_type& org=**m;
-                total_workload += get<WORKLOAD>(org, 0.0);
-                if (get<GERM_STATUS>(org, true)) {
-                    ++germ_count;
-                    germ_workload += get<WORKLOAD>(org, 0.0);
+            ++time_since_last_rep;
+
+
+            if (get<DIVIDE_REMOTE>(*control_ea,0)) {
+                num_replications++;
+
+                int total_workload = 0;
+                int germ_workload = 0;
+                int germ_count = 0;
+
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+
+                for(typename subpop_type::iterator m=control_ea->population().begin(); m!=control_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                    if (get<GERM_STATUS>(org, true)) {
+                        ++germ_count;
+                        germ_workload += get<WORKLOAD>(org, 0.0);
+                    }
                 }
+
+                df.write(timepoint)
+                .write(nr)
+                .write(num_replications)
+                .write(cur_update)
+                .write(time_since_last_rep)
+                .write(control_ea->size())
+                .write(germ_count)
+                .write(total_workload)
+                .write(germ_workload)
+                .write(total_workload - germ_workload);
+                df.endl();
+
+
+                control_ea->resources().reset();
+                put<GROUP_RESOURCE_UNITS>(0,*control_ea);
+                put<DIVIDE_REMOTE>(0,*control_ea);
+                time_since_last_rep = 0;
+
             }
-            total_size += j->size();
         }
-        
-        
-        df.write(timepoint)
-        .write(nr)
-        .write(total_size)
-        .write(germ_count)
-        .write(total_workload)
-        .write(germ_workload)
-        .write(total_workload - germ_workload);
-        df.endl();
-    }
-        
-    }
+            
+    }// end for
+}//end lod
         
     }
 }

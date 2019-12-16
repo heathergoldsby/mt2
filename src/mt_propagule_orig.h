@@ -702,8 +702,6 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     accumulator_set<double, stats<tag::mean, tag::variance> > soma_workload_acc;
 
                     
-                    
-                    
                     // get a new subpopulation:
                     typename MEA::individual_ptr_type p = mea.make_individual();
                     p->initialize(mea.md());

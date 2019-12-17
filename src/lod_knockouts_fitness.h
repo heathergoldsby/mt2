@@ -1622,16 +1622,15 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
     datafile df("lod_dol.dat");
 
     df.add_field("timepoint")
-    .write("tech_rep")
-    .write("num_propagules")
-    .write("cur_update")
-    .write("time_since_last_rep")
-    .write("multicell_size")
-    .write("germ_count")
-    .write("total_workload")
-    .write("germ_workload")
-    .write("soma_workload");
-    df.endl();
+    .add_field("tech_rep")
+    .add_field("num_propagules")
+    .add_field("cur_update")
+    .add_field("time_since_last_rep")
+    .add_field("multicell_size")
+    .add_field("germ_count")
+    .add_field("total_workload")
+    .add_field("germ_workload")
+    .add_field("soma_workload");
     
 
     int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);

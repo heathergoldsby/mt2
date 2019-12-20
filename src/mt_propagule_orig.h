@@ -38,6 +38,8 @@ LIBEA_MD_DECL(COST_RAMP, "ea.mt.cost_ramp", int);
 LIBEA_MD_DECL(LAST_REPLICATION_STATE, "ea.mt.last_rep_state", int); // 0 uni, 1 mc, -1 not set
 LIBEA_MD_DECL(REPLICATION_STATE_INDEX, "ea.mt.rep_state_index", int); // increments based on number of flips
 LIBEA_MD_DECL(GENERATION, "ea.mt.rep_state_index", int); //
+LIBEA_MD_DECL(MULTICELL_TISSUE_BIRTHS, "ea.mt.mctissuebirths", int); //number of individual cells born in a multicell
+
 LIBEA_MD_DECL(TISSUE_ACCRETION_MULT, "ea.mt.tissue_accretion_mult", int); //
 LIBEA_MD_DECL(TISSUE_ACCRETION_ADD, "ea.mt.tissue_accretion_add", int); //
 
@@ -592,11 +594,12 @@ struct mt_propagule : end_of_update_event<MEA> {
 template <typename MEA>
 struct mt_gls_propagule : end_of_update_event<MEA> {
     //! Constructor.
-    mt_gls_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt_gls.dat") {
+    mt_gls_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt_gls.dat"), _df2("birth_tracking.dat") {
         _df.add_field("update")
         .add_field("mean_rep_time")
         .add_field("mean_res")
         .add_field("mean_multicell_size")
+        .add_field("mean_mc_tissue_births") // mean number of individual cell births within multicells
         .add_field("mean_germ_num")
         .add_field("mean_pop_num")
         .add_field("mean_germ_percent")
@@ -644,6 +647,10 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         int ru = 1;
         if ((mea.current_update() % ru) == 0) {
 
+            // hjg - it's a bit clunky but I only want it to print every 100 updates.
+            if ((mea.current_update() % 100) == 0) {
+                _df2.write(mea.current_update());
+            }
 
             // See if any subpops have exceeded the resource threshold
             typename MEA::population_type offspring;
@@ -672,6 +679,10 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i,0));
                     multicell_res.push_back(get<GROUP_RESOURCE_UNITS>(*i,0));
                     multicell_size.push_back(alive_count);
+
+                    int births =get<MULTICELL_TISSUE_BIRTHS>(*i, 0);
+                    multicell_tissue_births.push_back(births);
+                    _df2.write(births);
                             
                     if (alive_count == 1) {
                         count_uni += 1;
@@ -823,14 +834,18 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         }
         
         if ((mea.current_update() % 100) == 0) {
+            _df2.endl();
+
             _df.write(mea.current_update());
             
             if (multicell_rep.size() > 0) {
                 _df.write(std::accumulate(multicell_rep.begin(), multicell_rep.end(), 0.0)/multicell_rep.size())
                 .write(std::accumulate(multicell_res.begin(), multicell_res.end(), 0.0)/multicell_res.size())
-                .write(std::accumulate(multicell_size.begin(), multicell_size.end(), 0.0)/multicell_size.size());
+                .write(std::accumulate(multicell_size.begin(), multicell_size.end(), 0.0)/multicell_size.size())
+                .write(std::accumulate(multicell_tissue_births.begin(), multicell_tissue_births.end(), 0.0)/multicell_tissue_births.size());;
             } else {
                 _df.write(0.0)
+                .write(0.0)
                 .write(0.0)
                 .write(0.0);
             }
@@ -898,6 +913,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
             multicell_rep.clear();
             multicell_res.clear();
             multicell_size.clear();
+            multicell_tissue_births.clear();
             germ_num.clear();
             germ_percent.clear();
             pop_num.clear();
@@ -915,9 +931,12 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
     }
     
     datafile _df;
+    datafile _df2;
+
     std::deque<double> multicell_rep;
     std::deque<double> multicell_res;
     std::deque<double> multicell_size;
+    std::deque<double> multicell_tissue_births;
     std::deque<double> germ_num;
     std::deque<double> germ_percent;
     std::deque<double> pop_num;

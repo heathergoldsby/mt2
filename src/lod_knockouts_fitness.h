@@ -1549,12 +1549,11 @@ namespace ealib {
                             float mean_gen_diff = mean_gen - start_gen;
 
                             float mean_size = organism_size/metapop.size();
-                            if (metapop.current_update() > 5000){
                             if (mean_size < 2) {
                                 exit_mean_size++;
                             } else {
                                 exit_mean_size = 0;
-                            }}
+                            }
                             
                             df.write(mc_res)
                             .write(nr)
@@ -1567,11 +1566,11 @@ namespace ealib {
                             .write(germ_workload/num_germ)
                             .endl();
                             
-                            if ((exit_mean_size > 5) ||
+                            if ((exit_mean_size >= 5) ||
                                 (mean_gen_diff > 100))  {
                                 int reverted = 0;
                                 
-                                if (exit_mean_size > 5)  {
+                                if (exit_mean_size >= 5)  {
                                     revert_count += 1;
                                     reverted = 1;
                                 }
@@ -1607,7 +1606,7 @@ namespace ealib {
                 }
                 
                 mc_res -= 25;
-                if (mc_res == 0) {
+                if (mc_res <= 0) {
                     entrench_not_found = false;
                 }
                 

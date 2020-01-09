@@ -289,6 +289,7 @@ public:
         add_tool<ealib::analysis::lod_fitness_start_stop>(this);
         add_tool<ealib::analysis::lod_entrench>(this);
         add_tool<ealib::analysis::lod_size>(this);
+        add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
 
 
     }

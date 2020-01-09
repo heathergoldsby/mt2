@@ -1605,7 +1605,7 @@ namespace ealib {
                     
                 }
                 
-                mc_res -= 25;
+                mc_res -= 50;
                 if (mc_res <= 0) {
                     entrench_not_found = false;
                 }

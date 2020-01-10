@@ -255,6 +255,7 @@ public:
         add_option<LOD_START_ANALYSIS>(this);
         add_option<LOD_END_ANALYSIS>(this);
         add_option<ANALYSIS_LOD_REPS>(this);
+        add_option<ANALYSIS_LOD_START_REP>(this);
         add_option<ANALYSIS_LOD_START_COST>(this);
         add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
         add_option<TISSUE_ACCRETION_MULT>(this);

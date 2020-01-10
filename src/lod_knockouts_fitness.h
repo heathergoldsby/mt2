@@ -26,6 +26,7 @@ LIBEA_MD_DECL(LOD_END_ANALYSIS, "ea.mt.lod_end_analysis", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_REPS, "ea.mt.lod_analysis_reps", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_START_COST, "ea.mt.lod_start_cost", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE, "ea.mt.lod_timepoint_to_analyze", int);
+LIBEA_MD_DECL(ANALYSIS_LOD_START_REP, "ea.mt.lod_analysis_start_rep", int);
 
 
 
@@ -1457,6 +1458,8 @@ namespace ealib {
             ;
             
             int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);
+            int start_rep = get<ANALYSIS_LOD_START_REP>(ea,0);
+
             int mc_res = get<GROUP_REP_THRESHOLD>(ea);
             int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
             
@@ -1481,7 +1484,7 @@ namespace ealib {
             
             while (entrench_not_found) {
                 int revert_count = 0;
-                for (int nr = 0; nr < num_rep; nr++) {
+                for (int nr = start_rep; nr < start_rep+num_rep; nr++) {
                     // should define checkpoint + analysis input
                     //ea is the thing loaded from the checkpoint; EA is its type
                     EA metapop; // a new EA
@@ -1606,7 +1609,7 @@ namespace ealib {
                 }
                 
                 mc_res -= 50;
-                if (mc_res <= 0) {
+                if (mc_res < 0) {
                     entrench_not_found = false;
                 }
                 

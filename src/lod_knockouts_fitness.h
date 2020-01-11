@@ -1552,11 +1552,15 @@ namespace ealib {
                             float mean_gen_diff = mean_gen - start_gen;
 
                             float mean_size = organism_size/metapop.size();
-                            if (mean_size < 2) {
-                                exit_mean_size++;
-                            } else {
-                                exit_mean_size = 0;
-                            }
+                            if (metapop.current_update() > 1000){
+                                if (mean_size < 2) {
+                                    exit_mean_size++;
+                                } else  {
+                                    exit_mean_size = 0;
+                            }}
+                            
+                            
+                           
                             
                             df.write(mc_res)
                             .write(nr)

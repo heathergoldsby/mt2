@@ -1577,7 +1577,8 @@ namespace ealib {
                                 (mean_gen_diff > 100))  {
                                 int reverted = 0;
                                 
-                                if (exit_mean_size >= 5)  {
+                                if ((exit_mean_size >= 5) &&
+                                    (mean_gen_diff > 10)){
                                     revert_count += 1;
                                     reverted = 1;
                                 }

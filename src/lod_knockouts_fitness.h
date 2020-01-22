@@ -1347,7 +1347,7 @@ namespace ealib {
                             float mean_gen_diff = mean_gen - start_gen;
 
                             float mean_size = organism_size/metapop.size();
-                            if (metapop.current_update() > 5000){
+                            if (metapop.current_update() > 10000){
                             if (mean_size < 2) {
                                 exit_mean_size++;
                             } else {
@@ -1365,8 +1365,7 @@ namespace ealib {
                             .write(germ_workload/num_germ)
                             .endl();
                             
-                            if ((exit_mean_size > 5) ||
-                                (mean_gen_diff > 100))  {
+                            if (mean_gen_diff > 100)  {
                                 int reverted = 0;
                                 
                                 if (exit_mean_size > 5)  {

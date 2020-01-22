@@ -39,6 +39,7 @@
 #include <ea/line_of_descent.h>
 #include "mt_propagule_orig.h"
 #include "multi_birth_selfrep_not_remote_ancestor.h"
+#include "lod_knockouts_fitness.h"
 
 
 using namespace ealib;
@@ -230,6 +231,12 @@ public:
         
         add_option<IND_REP_THRESHOLD>(this);
         add_option<COST_RAMP>(this);
+        
+        add_option<ANALYSIS_LOD_REPS>(this);
+        add_option<ANALYSIS_LOD_START_REP>(this);
+        add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
+
+        add_option<TISSUE_ACCRETION_ADD>(this);
 
 
     }
@@ -237,6 +244,8 @@ public:
     virtual void gather_tools() {
         //add_tool<ealib::analysis::lod_shannon_tasks_orgs>(this);
         //add_tool<ealib::analysis::lod_knockouts>(this);
+        add_tool<ealib::analysis::lod_entrench_add>(this);
+
 
     }
     

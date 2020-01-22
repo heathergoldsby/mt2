@@ -1171,26 +1171,7 @@ namespace ealib {
                 } else {
                     entrench_not_found = false;
                 }
-                /*
-                if (revert_count <= (num_rep / 2)) {
-                    start_mult += 2;
-                    if (checked_nums.find(start_mult) != checked_nums.end()){
-                        entrench_not_found = false;
-                    }
-                } else {
-                    if (start_mult == 2){
-                        start_mult = 1;
-                    } else if (start_mult == 1) {
-                        start_mult = 0;
-                    } else {
-                        start_mult -= 2;
-                    }
-                    if ((checked_nums.find(start_mult) != checked_nums.end()) ||
-                        (start_mult < 0)) {
-                        entrench_not_found = false;
-                    }
-                    
-                }*/
+
             }// end while
         }
 
@@ -1424,6 +1405,10 @@ namespace ealib {
                 }
                 
                 add_ent *= 2;
+                if (add_ent >= 1024) {
+                    entrench_not_found = true;
+                }
+                
                 
             }// end while
         }

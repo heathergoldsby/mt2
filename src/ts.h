@@ -17,7 +17,7 @@
 #include <boost/accumulators/statistics/variance.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "selfrep_not_ancestor.h"
+//#include "selfrep_not_ancestor.h"
 #include "repro_not_ancestor.h"
 #include "resource_consumption.h"
 #include "configurable_mutation.h"

@@ -291,6 +291,8 @@ public:
         add_tool<ealib::analysis::lod_entrench>(this);
         add_tool<ealib::analysis::lod_size>(this);
         add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
+        add_tool<ealib::analysis::lod_entrench_add>(this);
+
 
 
     }

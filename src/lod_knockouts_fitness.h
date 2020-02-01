@@ -760,8 +760,7 @@ namespace ealib {
             .add_field("update")
             ;
             
-            int num_rep = 100;
-            
+            int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);            
             int lod_depth = 0;
             int next_lod = 0;
             

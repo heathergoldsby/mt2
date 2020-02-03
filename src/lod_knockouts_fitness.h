@@ -1441,6 +1441,7 @@ namespace ealib {
         .add_field("workload")
         .add_field("workload_propagule_ineligible")
         .add_field("reverted")
+        .add_field("lod")
         ;
         
         
@@ -1586,6 +1587,7 @@ namespace ealib {
                             .write(total_workload/organism_size)
                             .write(germ_workload/num_germ)
                             .write(reverted)
+                            .write(lod_depth)
                             .endl();
                         }
                         if (cur_update == max_update){
@@ -1599,6 +1601,7 @@ namespace ealib {
                             .write(total_workload/organism_size)
                             .write(germ_workload/num_germ)
                             .write("2")
+                            .write(lod_depth)
                             .endl();
                         }
                     }

@@ -1414,6 +1414,9 @@ namespace ealib {
     
     LIBEA_ANALYSIS_TOOL(lod_entrench_add_start_stop) {
         
+        /* This one works backwards. Cost starts high and goes lower. Once we find a
+         reversion point, then we stop. */
+        
         datafile df("lod_entrench_all.dat");
         df.add_field("cost")
         .add_field("iteration")
@@ -1605,6 +1608,10 @@ namespace ealib {
             
             add_ent /= 2;
             if ((add_ent >= 1024) || (add_ent <= 0)) {
+                entrench_not_found = false;
+            }
+            
+            if (revert_count == 0) {
                 entrench_not_found = false;
             }
             

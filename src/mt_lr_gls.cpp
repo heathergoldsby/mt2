@@ -294,6 +294,7 @@ public:
         add_tool<ealib::analysis::lod_entrench_add>(this);
         add_tool<ealib::analysis::lod_dol>(this);
         add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
+        add_tool<ealib::analysis::lod_entrench_add_start_stop>(this); 
         
 
     }

@@ -290,8 +290,19 @@ namespace ealib {
             //lifecycle::gather_events(metapop);
             
             line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-            typename line_of_descent<EA>::iterator i=lod.end(); --i;
-            
+            int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+            typename line_of_descent<EA>::iterator i;
+            if (timepoint == 1) {
+                i = lod.end(); --i;
+            } else {
+                i=lod.begin(); i++;
+                // find the first to transition
+                for( ; i!=lod.end(); i++) {
+                    if (i->size() > 2) {
+                        break;
+                    }
+                }
+            }
             for (int nr = 0; nr < num_rep; nr++) {
                 
                 
@@ -1191,7 +1202,7 @@ namespace ealib {
         typename line_of_descent<EA>::iterator i;
         i=lod.begin(); i++;
         for( ; i!=lod.end(); i++) {
-               
+
             typedef typename EA::subpopulation_type::population_type subpop_type;
             float total_workload = 0;
             float germ_workload = 0;
@@ -1203,15 +1214,16 @@ namespace ealib {
                             germ_workload += get<WORKLOAD>(org, 0.0);
                             num_germ += 1;
                         }
-                    }
-                
+            }
+
             df.write(i_count)
             .write(i->size())
             .write(num_germ)
             .write(total_workload)
             .write(germ_workload)
             .endl();
-        
+            
+            i_count++;
         }
     }
     

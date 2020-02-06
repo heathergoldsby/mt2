@@ -1176,52 +1176,46 @@ namespace ealib {
 
     LIBEA_ANALYSIS_TOOL(lod_size) {
     
-    datafile df("lod_size.dat");
-    df.add_field("time")
-    .add_field("organism_size")
-    .add_field("num_germ")
-    .add_field("workload")
-    .add_field("germ_workload")
-    ;
-    
+        datafile df("lod_size.dat");
+        df.add_field("time")
+        .add_field("organism_size")
+        .add_field("num_germ")
+        .add_field("workload")
+        .add_field("germ_workload")
+        ;
         
-    line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-    int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+            
+        line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
 
-    typename line_of_descent<EA>::iterator i;
-    if (timepoint == 1) {
-        i = lod.end(); --i;
-    } else {
+        int i_count = 0;
+        typename line_of_descent<EA>::iterator i;
         i=lod.begin(); i++;
-        // find the first to transition
         for( ; i!=lod.end(); i++) {
-            if (i->size() > 2) {
-                break;
-            }
+               
+            typedef typename EA::subpopulation_type::population_type subpop_type;
+            float total_workload = 0;
+            float germ_workload = 0;
+            int num_germ = 0;
+            for(typename subpop_type::iterator m=i->population().begin(); m!=i->population().end(); ++m) {
+                        typename EA::subpopulation_type::individual_type& org=**m;
+                        total_workload += get<WORKLOAD>(org, 0.0);
+                        if (get<GERM_STATUS>(org, 1)) {
+                            germ_workload += get<WORKLOAD>(org, 0.0);
+                            num_germ += 1;
+                        }
+                    }
+                
+            df.write(i_count)
+            .write(i->size())
+            .write(num_germ)
+            .write(total_workload)
+            .write(germ_workload)
+            .endl();
+        
         }
     }
-    typedef typename EA::subpopulation_type::population_type subpop_type;
-    float total_workload = 0;
-    float germ_workload = 0;
-    int num_germ = 0;
-    for(typename subpop_type::iterator m=i->population().begin(); m!=i->population().end(); ++m) {
-                typename EA::subpopulation_type::individual_type& org=**m;
-                total_workload += get<WORKLOAD>(org, 0.0);
-                if (get<GERM_STATUS>(org, 1)) {
-                    germ_workload += get<WORKLOAD>(org, 0.0);
-                    num_germ += 1;
-                }
-            }
-        
-    df.write(timepoint)
-    .write(i->size())
-    .write(num_germ)
-    .write(total_workload)
-    .write(germ_workload)
-    .endl();
     
-    }
-    
+   
     
     LIBEA_ANALYSIS_TOOL(lod_entrench_add) {
             
@@ -1273,6 +1267,7 @@ namespace ealib {
                     if (i->size() > 2) {
                         break;
                     }
+                    i_count++;
                 }
             }
             

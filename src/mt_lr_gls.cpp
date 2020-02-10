@@ -260,6 +260,7 @@ public:
         add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
         add_option<TISSUE_ACCRETION_MULT>(this);
         add_option<TISSUE_ACCRETION_ADD>(this);
+        add_option<ANALYSIS_MUTATIONS_OFF>(this);
 
     }
     
@@ -285,16 +286,18 @@ public:
 //        add_tool<ealib::analysis::lod_last_knockouts_line>(this);
 //        add_tool<ealib::analysis::lod_archive_trans>(this);
 //        add_tool<ealib::analysis::lod_forced_uni>(this);
-        add_tool<ealib::analysis::lod_fitness>(this);
-        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
-        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
-        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
+//        add_tool<ealib::analysis::lod_fitness>(this);
+//        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
+//        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
+//        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
         add_tool<ealib::analysis::lod_entrench>(this);
         add_tool<ealib::analysis::lod_size>(this);
         add_tool<ealib::analysis::lod_entrench_add>(this);
         add_tool<ealib::analysis::lod_dol>(this);
-        add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
-        add_tool<ealib::analysis::lod_entrench_add_start_stop>(this); 
+        //add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
+        add_tool<ealib::analysis::lod_entrench_add_start_stop>(this);
+        add_tool<ealib::analysis::lod_fitness_combo>(this);
+        
         
 
     }

@@ -817,6 +817,7 @@ namespace ealib {
             lod_step++;
             // find the first to transition
             for( ; i!=lod.end(); i++) {
+                lod_step++;
                 if ((timepoint != 0) && (timepoint == lod_step)) {
                     break;
                 }

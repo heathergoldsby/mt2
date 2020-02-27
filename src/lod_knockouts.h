@@ -821,16 +821,22 @@ namespace ealib {
             df.add_field("lod_depth")
             .add_field("control_fit")
             .add_field("control_size")
+            .add_field("control_workload")
             .add_field("rx_ko_fit")
             .add_field("rx_ko_size")
+            .add_field("rx_workload")
             .add_field("neighbor_ko_fit")
             .add_field("neighbor_ko_size")
+            .add_field("neighbor_workload")
             .add_field("gs_sense_ko_fit")
             .add_field("gs_sense_ko_size")
+            .add_field("gs_sense_workload")
             .add_field("res_sense_ko_fit")
             .add_field("res_sense_ko_size")
+            .add_field("res_sense_workload")
             .add_field("soma_ko_fit")
             .add_field("soma_ko_size")
+            .add_field("soma_workload")
             ;
             
             
@@ -862,7 +868,7 @@ namespace ealib {
                 knockout<instructions::is_neighbor,instructions::nop_x>(*knockout_neighbor_ea);
                 put<IND_REP_THRESHOLD>(get<IND_REP_THRESHOLD>(ea,0), *knockout_neighbor_ea);
 
-                
+
                 typename EA::individual_ptr_type knockout_sense_gs_ea = ea.make_individual(*i->traits().founder());
                 knockout<if_germ,instructions::nop_x>(*knockout_sense_gs_ea);
                 knockout<if_soma,instructions::nop_x>(*knockout_sense_gs_ea);
@@ -892,7 +898,13 @@ namespace ealib {
                 }
                 df.write(cur_update);
                 df.write(control_ea->population().size());
-                
+                float total_workload = 0;
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+                for(typename subpop_type::iterator m=control_ea->population().begin(); m!=control_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                }
+                df.write(total_workload);
                 
                 cur_update = 0;
                 // and run till the group amasses the right amount of resources
@@ -901,9 +913,15 @@ namespace ealib {
                     knockout_rx_ea->update();
                     ++cur_update;
                 }
-                
                 df.write(cur_update);
                 df.write(knockout_rx_ea->population().size());
+                total_workload = 0;
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+                for(typename subpop_type::iterator m=knockout_rx_ea->population().begin(); m!=knockout_rx_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                }
+                df.write(total_workload);
                 
                 
                 cur_update = 0;
@@ -917,7 +935,13 @@ namespace ealib {
                 
                 df.write(cur_update);
                 df.write(knockout_neighbor_ea->population().size());
-
+                total_workload = 0;
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+                for(typename subpop_type::iterator m=knockout_neighbor_ea->population().begin(); m!=knockout_neighbor_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                }
+                df.write(total_workload);
                 cur_update = 0;
                 
                 // and run till the group amasses the right amount of resources
@@ -929,6 +953,14 @@ namespace ealib {
                 
                 df.write(cur_update);
                 df.write(knockout_sense_gs_ea->population().size());
+                total_workload = 0;
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+                for(typename subpop_type::iterator m=knockout_sense_gs_ea->population().begin(); m!=knockout_sense_gs_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                }
+                df.write(total_workload);
+                
                 cur_update = 0;
                 
                 // and run till the group amasses the right amount of resources
@@ -940,6 +972,13 @@ namespace ealib {
                 
                 df.write(cur_update);
                 df.write(knockout_sense_res_ea->population().size());
+                total_workload = 0;
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+                for(typename subpop_type::iterator m=knockout_sense_res_ea->population().begin(); m!=knockout_sense_res_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                }
+                df.write(total_workload);
                 
                 cur_update = 0;
                 
@@ -952,7 +991,13 @@ namespace ealib {
                 
                 df.write(cur_update);
                 df.write(knockout_soma_ea->population().size());
-                
+                total_workload = 0;
+                typedef typename EA::subpopulation_type::population_type subpop_type;
+                for(typename subpop_type::iterator m=knockout_soma_ea->population().begin(); m!=knockout_soma_ea->population().end(); ++m) {
+                    typename EA::subpopulation_type::individual_type& org=**m;
+                    total_workload += get<WORKLOAD>(org, 0.0);
+                }
+                df.write(total_workload);
 
                 
                 

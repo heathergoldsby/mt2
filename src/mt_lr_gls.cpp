@@ -261,7 +261,7 @@ public:
         add_option<TISSUE_ACCRETION_MULT>(this);
         add_option<TISSUE_ACCRETION_ADD>(this);
         add_option<ANALYSIS_MUTATIONS_OFF>(this);
-
+        add_option<TRACK_DETAILS>(this);
     }
     
     virtual void gather_tools() {
@@ -270,7 +270,7 @@ public:
 //        add_tool<ealib::analysis::lod_knockouts>(this);
 //        add_tool<ealib::analysis::lod_knockouts2>(this);
 //
-//        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
+        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
         add_tool<ealib::analysis::lod_report_gs>(this);
 //        add_tool<ealib::analysis::lod_transition>(this);
 //        add_tool<ealib::analysis::lod_gls_circle_square_plot>(this);

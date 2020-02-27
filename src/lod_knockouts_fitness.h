@@ -28,7 +28,7 @@ LIBEA_MD_DECL(ANALYSIS_LOD_START_COST, "ea.mt.lod_start_cost", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE, "ea.mt.lod_timepoint_to_analyze", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_START_REP, "ea.mt.lod_analysis_start_rep", int);
 LIBEA_MD_DECL(ANALYSIS_MUTATIONS_OFF, "ea.mt.lod_analysis_mutations_off", int);
-
+LIBEA_MD_DECL(TRACK_DETAILS, "ea.mt.track_details", int);
 
 
 namespace ealib {
@@ -796,18 +796,80 @@ namespace ealib {
         .add_field("update")
         ;
         
+        datafile df3("multicell_detail.dat");
+        df3.add_field("timepoint")
+        .add_field("count")
+        .add_field("iteration")
+        .add_field("multicell")
+        .add_field("cell")
+        .add_field("workload")
+        .add_field("propagule_eligible")
+        .add_field("cell_resources")
+        .add_field("not")
+        .add_field("nand")
+        .add_field("and")
+        .add_field("ornot")
+        .add_field("or")
+        .add_field("andnot")
+        .add_field("nor")
+        .add_field("xor")
+        .add_field("equals")
+        .add_field("update")
+        .add_field("multicell_resources")
+        .add_field("total_workload")
+        ;
+        
+        datafile df4("unicell_detail.dat");
+        df4.add_field("timepoint")
+        .add_field("count")
+        .add_field("iteration")
+        .add_field("workload")
+        .add_field("propagule_eligible")
+        .add_field("cell_resources")
+        .add_field("not")
+        .add_field("nand")
+        .add_field("and")
+        .add_field("ornot")
+        .add_field("or")
+        .add_field("andnot")
+        .add_field("nor")
+        .add_field("xor")
+        .add_field("equals")
+        .add_field("update")
+        .add_field("multicell_resources")
+        .add_field("total_workload")
+        ;
+        
+        datafile df5("inviable_unicell_detail.dat");
+        df5.add_field("timepoint")
+        .add_field("count")
+        .add_field("iteration")
+        .add_field("workload")
+        .add_field("propagule_eligible")
+        .add_field("cell_resources")
+        .add_field("not")
+        .add_field("nand")
+        .add_field("and")
+        .add_field("ornot")
+        .add_field("or")
+        .add_field("andnot")
+        .add_field("nor")
+        .add_field("xor")
+        .add_field("equals")
+        .add_field("update")
+        .add_field("multicell_resources")
+        .add_field("total_workload")
+        ;
+        
+        int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+        int track_details = get<TRACK_DETAILS>(ea,1);
         int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);
         int mutations_off = get<ANALYSIS_MUTATIONS_OFF>(ea,0);
-        
-        
-        
-        //lifecycle::after_initialization(metapop);
-        //lifecycle::gather_events(metapop);
         
         line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
         //        typename line_of_descent<EA>::iterator i=lod.begin(); i++;
         
-        int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+         
         typename line_of_descent<EA>::iterator i;
         int lod_step = 0;
         if (timepoint == 1) {
@@ -848,8 +910,8 @@ namespace ealib {
             
             if (mutations_off) {
                 put<TASK_MUTATION_PER_SITE_P>(0, metapop);
-                put<MUTATION_PER_SITE_P>(0, metapop);
-                put<GERM_MUTATION_PER_SITE_P>(0, metapop);
+                //put<MUTATION_PER_SITE_P>(0, metapop);
+                //put<GERM_MUTATION_PER_SITE_P>(0, metapop);
             }
             
             
@@ -862,11 +924,10 @@ namespace ealib {
             
             if (mutations_off) {
                 put<TASK_MUTATION_PER_SITE_P>(0, *control_mc);
-                put<MUTATION_PER_SITE_P>(0, *control_mc);
-                put<GERM_MUTATION_PER_SITE_P>(0, *control_mc);
+                //put<MUTATION_PER_SITE_P>(0, *control_mc);
+                //put<GERM_MUTATION_PER_SITE_P>(0, *control_mc);
             }
-            
-            
+                        
             typename EA::population_type init_mc;
             init_mc.insert(init_mc.end(),control_mc);
             
@@ -887,14 +948,42 @@ namespace ealib {
             // get workload
             float total_workload = 0;
             float total_cells = 0;
+            int multicell_count = 0;
             typedef typename EA::subpopulation_type::population_type subpop_type;
             
             for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
                 total_cells += j->size();
+                int cell_count = 0;
                 for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
+                    
                     typename EA::subpopulation_type::individual_type& org=**m;
                     total_workload += get<WORKLOAD>(org, 0.0);
+                    if (track_details) {
+                        df3.write(timepoint)
+                        .write(0)
+                        .write(nr)
+                        .write(multicell_count)
+                        .write(cell_count)
+                        .write(get<WORKLOAD>(org, 0.0))
+                        .write(get<GERM_STATUS>(org,true))
+                        .write(get<SAVED_RESOURCES>(org,0.0))
+                        .write(get<TASK_NOT>(org,0))
+                        .write(get<TASK_NAND>(org,0))
+                        .write(get<TASK_AND>(org,0))
+                        .write(get<TASK_ORNOT>(org,0))
+                        .write(get<TASK_OR>(org,0))
+                        .write(get<TASK_ANDNOT>(org,0))
+                        .write(get<TASK_NOR>(org,0))
+                        .write(get<TASK_XOR>(org,0))
+                        .write(get<TASK_EQUALS>(org,0))
+                        .write(cur_update)
+                        .write(get<GROUP_RESOURCE_UNITS>(*j,0.0))
+                        .write(total_workload);
+                        df3.endl();
+                    }
+                    cell_count++;
                 }
+                multicell_count++;
             }
             
             
@@ -957,9 +1046,40 @@ namespace ealib {
                 
                 if (knockout_loc->population().size() < 2) {
                     num_uni++;
-                    
+                    float total_workload = 0;
                     if (cur_update == update_max) {
                         num_uni_inviable++;
+                        if (track_details) {
+                            typedef typename EA::subpopulation_type::population_type subpop_type;
+                            for(typename subpop_type::iterator m=knockout_loc->population().begin(); m!=knockout_loc->population().end(); ++m) {
+                                
+                                typename EA::subpopulation_type::individual_type& org=**m;
+                                total_workload += get<WORKLOAD>(org, 0.0);
+                                if (track_details) {
+                                    df5.write(timepoint)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(num_uni)
+                                    .write(get<WORKLOAD>(org, 0.0))
+                                    .write(get<GERM_STATUS>(org,true))
+                                    .write(get<SAVED_RESOURCES>(org,0.0))
+                                    .write(get<TASK_NOT>(org,0))
+                                    .write(get<TASK_NAND>(org,0))
+                                    .write(get<TASK_AND>(org,0))
+                                    .write(get<TASK_ORNOT>(org,0))
+                                    .write(get<TASK_OR>(org,0))
+                                    .write(get<TASK_ANDNOT>(org,0))
+                                    .write(get<TASK_NOR>(org,0))
+                                    .write(get<TASK_XOR>(org,0))
+                                    .write(get<TASK_EQUALS>(org,0))
+                                    .write(cur_update)
+                                    .write(get<GROUP_RESOURCE_UNITS>(*knockout_loc,0.0))
+                                    .write(total_workload);
+                                    df5.endl();
+                                }
+                            }
+                        }
                         continue;
                     }
                     
@@ -975,8 +1095,8 @@ namespace ealib {
                         
                         if (mutations_off) {
                             put<TASK_MUTATION_PER_SITE_P>(0, *knockout_loc2);
-                            put<MUTATION_PER_SITE_P>(0, *knockout_loc2);
-                            put<GERM_MUTATION_PER_SITE_P>(0, *knockout_loc2);
+                            //put<MUTATION_PER_SITE_P>(0, *knockout_loc2);
+                            //put<GERM_MUTATION_PER_SITE_P>(0, *knockout_loc2);
                         }
                         
                         
@@ -1003,8 +1123,8 @@ namespace ealib {
                         
                         if (mutations_off) {
                             put<TASK_MUTATION_PER_SITE_P>(0, metapop);
-                            put<MUTATION_PER_SITE_P>(0, metapop);
-                            put<GERM_MUTATION_PER_SITE_P>(0, metapop);
+                            //put<MUTATION_PER_SITE_P>(0, metapop);
+                            //put<GERM_MUTATION_PER_SITE_P>(0, metapop);
                         }
                         
                         typename EA::population_type init_mc;
@@ -1027,16 +1147,46 @@ namespace ealib {
                         // get workload
                         float total_workload = 0;
                         int total_cells = 0;
+                        int multicell_count = 0;
                         typedef typename EA::subpopulation_type::population_type subpop_type;
                         
                         for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
                             total_cells += j->size();
-
+                            int cell_count = 0;
                             for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
+                                
                                 typename EA::subpopulation_type::individual_type& org=**m;
                                 total_workload += get<WORKLOAD>(org, 0.0);
+                                if (track_details) {
+                                    df4.write(timepoint)
+                                    .write(0)
+                                    .write(nr)
+                                    .write(multicell_count)
+                                    .write(num_uni)
+                                    .write(get<WORKLOAD>(org, 0.0))
+                                    .write(get<GERM_STATUS>(org,true))
+                                    .write(get<SAVED_RESOURCES>(org,0.0))
+                                    .write(get<TASK_NOT>(org,0))
+                                    .write(get<TASK_NAND>(org,0))
+                                    .write(get<TASK_AND>(org,0))
+                                    .write(get<TASK_ORNOT>(org,0))
+                                    .write(get<TASK_OR>(org,0))
+                                    .write(get<TASK_ANDNOT>(org,0))
+                                    .write(get<TASK_NOR>(org,0))
+                                    .write(get<TASK_XOR>(org,0))
+                                    .write(get<TASK_EQUALS>(org,0))
+                                    .write(cur_update)
+                                    .write(get<GROUP_RESOURCE_UNITS>(*j,0.0))
+                                    .write(total_workload);
+                                    df4.endl();
+                                }
+                                cell_count++;
                             }
+                            multicell_count++;
                         }
+                        
+                        
+
                         
                         df.write(timepoint)
                         .write("uni")
@@ -1065,6 +1215,7 @@ namespace ealib {
         .endl();
     }
     
+
     
         
 //        LIBEA_ANALYSIS_TOOL(lod_fitness_start_stop) {

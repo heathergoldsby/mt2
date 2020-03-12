@@ -256,8 +256,9 @@ public:
 
         add_event<task_performed_tracking>(ea);
         add_event<task_switch_tracking>(ea);
-        //add_event<datafiles::mrca_lineage>(this,ea);
+        add_event<datafiles::mrca_lineage>(this,ea);
         add_event<subpopulation_founder_event>(ea);
+
     };
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, cli);

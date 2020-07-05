@@ -49,16 +49,14 @@ namespace ealib {
         .add_field("total_cells")
         ;
         
-        // num revertants, num multi, num inviable uni, num inviable propagule-ineligible uni, num viable
+        
         datafile df2("lod_fit_summary.dat");
         df2.add_field("timepoint")
         .add_field("num_unicell_revertants")
         .add_field("num_viable_unicells")
         .add_field("num_inviable_unicells")
-        .add_field("num_inviable_ineligible_unicells")
         .add_field("update")
         ;
-        
         
         datafile df3("multicell_detail.dat");
         df3.add_field("timepoint")
@@ -82,7 +80,6 @@ namespace ealib {
         .add_field("multicell_resources")
         .add_field("total_workload")
         ;
-
         
         datafile df4("unicell_detail.dat");
         df4.add_field("timepoint")
@@ -105,7 +102,6 @@ namespace ealib {
         .add_field("total_workload")
         ;
         
-
         datafile df5("inviable_unicell_detail.dat");
         df5.add_field("timepoint")
         .add_field("count")
@@ -280,10 +276,8 @@ namespace ealib {
         int uni_count = 0;
         int num_uni_viable = 0;
         int num_uni_inviable = 0;
-        int num_uni_inviable_ineligible = 0;
         int num_uni = 0;
-        typedef typename EA::subpopulation_type::population_type subpop_type;
-
+        
         
         for (int z =0; z < 100; z++) {
             for (int q = 0; q < control_ea->isa().size(); q++) {
@@ -318,44 +312,6 @@ namespace ealib {
                     if (cur_update == update_max) {
                         num_uni_inviable++;
                         if (track_details) {
-                            for(typename subpop_type::iterator m=knockout_loc->population().begin(); m!=knockout_loc->population().end(); ++m) {
-                                
-                                typename EA::subpopulation_type::individual_type& org=**m;
-                                total_workload += get<WORKLOAD>(org, 0.0);
-                                if (track_details) {
-                                    df5.write(timepoint)
-                                    .write(0)
-                                    .write(num_uni)
-                                    .write(get<WORKLOAD>(org, 0.0))
-                                    .write(get<GERM_STATUS>(org,true))
-                                    .write(get<SAVED_RESOURCES>(org,0.0))
-                                    .write(get<TASK_NOT>(org,0))
-                                    .write(get<TASK_NAND>(org,0))
-                                    .write(get<TASK_AND>(org,0))
-                                    .write(get<TASK_ORNOT>(org,0))
-                                    .write(get<TASK_OR>(org,0))
-                                    .write(get<TASK_ANDNOT>(org,0))
-                                    .write(get<TASK_NOR>(org,0))
-                                    .write(get<TASK_XOR>(org,0))
-                                    .write(get<TASK_EQUALS>(org,0))
-                                    .write(cur_update)
-                                    .write(get<GROUP_RESOURCE_UNITS>(*knockout_loc,0.0))
-                                    .write(total_workload);
-                                    df5.endl();
-                                }
-                            }
-                        }
-                        continue;
-                    }
-                    bool propagule_eligible;
-                    for(typename subpop_type::iterator m=knockout_loc->population().begin(); m!=knockout_loc->population().end(); ++m) {
-                    
-                        typename EA::subpopulation_type::individual_type& org=**m;
-                        propagule_eligible = get<GERM_STATUS>(org, true);
-                    }
-                    if (!propagule_eligible) {
-                        num_uni_inviable_ineligible++;
-                        if (track_details) {
                             typedef typename EA::subpopulation_type::population_type subpop_type;
                             for(typename subpop_type::iterator m=knockout_loc->population().begin(); m!=knockout_loc->population().end(); ++m) {
                                 
@@ -363,6 +319,8 @@ namespace ealib {
                                 total_workload += get<WORKLOAD>(org, 0.0);
                                 if (track_details) {
                                     df5.write(timepoint)
+                                    .write(0)
+                                    .write(0)
                                     .write(0)
                                     .write(num_uni)
                                     .write(get<WORKLOAD>(org, 0.0))
@@ -463,6 +421,7 @@ namespace ealib {
                                 total_workload += get<WORKLOAD>(org, 0.0);
                                 if (track_details) {
                                     df4.write(timepoint)
+                                    .write(0)
                                     .write(nr)
                                     .write(multicell_count)
                                     .write(num_uni)
@@ -514,7 +473,6 @@ namespace ealib {
         .write(num_uni)
         .write(num_uni_viable)
         .write(num_uni_inviable)
-        .write(num_uni_inviable_ineligible)
         .write(birth_up)
         .endl();
     }
@@ -1352,29 +1310,7 @@ namespace ealib {
 //            }// end while
 //        }
     
-    LIBEA_ANALYSIS_TOOL(lod_generations) {
-        
-        line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-        
-        datafile df("lod_generations.dat");
-        df.add_field("lod_depth");
-        df.add_field("update");
-        df.add_field("generations");
-        
-        typename line_of_descent<EA>::iterator i=lod.begin(); ++i;
-        int lod_depth = 0;
-
-        // skip def ancestor (that's what the +1 does)
-        for( ; i!=lod.end(); ++i) {
-            float gen = get<IND_GENERATION> (*i->traits().founder(), 0);
-            long birth_up = get<IND_BIRTH_UPDATE>(*i->traits().founder(),0);
-            df.write(lod_depth)
-            .write(birth_up)
-            .write(gen);
-            df.endl();
-            ++lod_depth;
-        }
-    }
+    
     
 LIBEA_ANALYSIS_TOOL(lod_dol) {
     
@@ -1640,4 +1576,6 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         
     }
 }
+
+
 #endif

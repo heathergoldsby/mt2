@@ -1289,7 +1289,7 @@ namespace ealib {
             
         }
 
-    
+
         LIBEA_ANALYSIS_TOOL(lod_archive_reversion) {
             
             line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);

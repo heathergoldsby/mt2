@@ -755,7 +755,7 @@ namespace ealib {
             
             int i_count = 0;
             line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
-            typename line_of_descent<EA>::iterator i;
+            typename line_of_descent<EA>::iterator i; 
             if (timepoint == 1) {
                 i = lod.end(); --i;
             } else {

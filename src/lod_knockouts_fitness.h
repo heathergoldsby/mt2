@@ -1104,13 +1104,13 @@ namespace ealib {
             }
             
             add_ent /= 2;
-            if ((add_ent >= 1024) || (add_ent <= 0)) {
+            if ((add_ent >= 2048) || (add_ent <= 0)) {
                 entrench_not_found = false;
             }
             
-            if (revert_count == 0) {
+            /*if (revert_count == 0) {
                 entrench_not_found = false;
-            }
+            }*/
             
             
         }// end while

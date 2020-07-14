@@ -154,9 +154,9 @@ namespace ealib {
             i=lod.begin(); i++;
             lod_step++;
             for( ; i!=lod.end(); i++) {
-                if (lod_step != timepoint) {
-                    lod_step++;
-                    continue;
+                lod_step++;
+                if (timepoint == lod_step) {
+                    break;
                 }
             }
         }

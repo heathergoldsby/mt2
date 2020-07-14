@@ -134,9 +134,10 @@ namespace ealib {
          
         typename line_of_descent<EA>::iterator i;
         int lod_step = 0;
+        
         if (timepoint == 1) {
             i = lod.end(); --i;
-        } else {
+        } else if (timepoint == 0) {
             i=lod.begin(); i++;
             lod_step++;
             // find the first to transition
@@ -149,9 +150,17 @@ namespace ealib {
                     break;
                 }
             }
+        } else {
+            i=lod.begin(); i++;
+            lod_step++;
+            for( ; i!=lod.end(); i++) {
+                if (lod_step != timepoint) {
+                    lod_step++;
+                    continue;
+                }
+            }
         }
-        
-        
+                
         
         
         for (int nr = 0; nr < num_rep; nr++) {

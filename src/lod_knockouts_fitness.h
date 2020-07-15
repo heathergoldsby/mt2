@@ -129,8 +129,9 @@ namespace ealib {
         df6.add_field("timepoint")
         .add_field("count")
         .add_field("iteration")
+        .add_field("multicell_count")
         ;
-        for (int q=0; q<100; q++){
+        for (int q=0; q<99; q++){
             df6.add_field(std::to_string(q));
         }
         

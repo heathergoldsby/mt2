@@ -262,6 +262,8 @@ public:
         add_option<TISSUE_ACCRETION_ADD>(this);
         add_option<ANALYSIS_MUTATIONS_OFF>(this);
         add_option<TRACK_DETAILS>(this);
+        add_option<ONLY_MC>(this);
+
     }
     
     virtual void gather_tools() {

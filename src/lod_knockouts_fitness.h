@@ -14,6 +14,7 @@
 #include <ea/digital_evolution/instruction_set.h>
 //#include <ea/digital_evolution/discrete_spatial_environment.h>
 #include <ea/digital_evolution/environment.h>
+#include <ea/digital_evolution/hardware.h>
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -29,6 +30,7 @@ LIBEA_MD_DECL(ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE, "ea.mt.lod_timepoint_to_analyze
 LIBEA_MD_DECL(ANALYSIS_LOD_START_REP, "ea.mt.lod_analysis_start_rep", int);
 LIBEA_MD_DECL(ANALYSIS_MUTATIONS_OFF, "ea.mt.lod_analysis_mutations_off", int);
 LIBEA_MD_DECL(TRACK_DETAILS, "ea.mt.track_details", int);
+LIBEA_MD_DECL(ONLY_MC, "ea.mt.only_mc", int);
 
 
 namespace ealib {
@@ -123,11 +125,20 @@ namespace ealib {
         .add_field("total_workload")
         ;
         
+        datafile df6("mc_genomes.dat");
+        df6.add_field("timepoint")
+        .add_field("count")
+        .add_field("iteration")
+        ;
+        for (int q=0; q<100; q++){
+            df6.add_field(std::to_string(q));
+        }
+        
         int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
         int track_details = get<TRACK_DETAILS>(ea,1);
         int num_rep = get<ANALYSIS_LOD_REPS>(ea,1);
         int mutations_off = get<ANALYSIS_MUTATIONS_OFF>(ea,0);
-        
+        int only_mc = get<ONLY_MC>(ea,0);
         line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
         //        typename line_of_descent<EA>::iterator i=lod.begin(); i++;
         
@@ -191,6 +202,8 @@ namespace ealib {
             }
             
             typename EA::individual_ptr_type control_mc = ea.make_individual(*i->traits().founder());
+            control_mc->traits()._founder = i->traits().founder();
+            
             put<COST_START_UPDATE>(get<COST_START_UPDATE>(ea,0), *control_mc);
             
             if (mutations_off) {
@@ -205,7 +218,8 @@ namespace ealib {
             std::swap(metapop.population(), init_mc);
             
             add_event<mt_gls_propagule>(metapop);
-            
+            add_event<subpopulation_founder_event>(metapop);
+
             int max_size = 32;
             int max_update = 50000;
             int cur_update = 0;
@@ -225,6 +239,23 @@ namespace ealib {
             for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
                 total_cells += j->size();
                 int cell_count = 0;
+                
+                if (track_details) {
+                        typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
+
+                        df6.write(timepoint)
+                        .write(0)
+                        .write(nr)
+                        .write(multicell_count);
+
+                        for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                            df6.write(*k2)
+                            .write(" ");
+                        }
+                        df6.endl();
+                }
+
+                
                 for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
                     
                     typename EA::subpopulation_type::individual_type& org=**m;
@@ -269,7 +300,9 @@ namespace ealib {
             df.endl();
         }
         
-        
+        if (only_mc) {
+            return;
+        }
         
         
         // **i is the EA, AS OF THE TIME THAT IT DIED!

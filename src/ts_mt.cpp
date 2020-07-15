@@ -237,6 +237,9 @@ public:
         add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
 
         add_option<TISSUE_ACCRETION_ADD>(this);
+        add_option<ANALYSIS_MUTATIONS_OFF>(this);
+        add_option<TRACK_DETAILS>(this);
+        add_option<ONLY_MC>(this);
 
 
     }
@@ -245,6 +248,8 @@ public:
         //add_tool<ealib::analysis::lod_shannon_tasks_orgs>(this);
         //add_tool<ealib::analysis::lod_knockouts>(this);
         add_tool<ealib::analysis::lod_entrench_add>(this);
+        add_tool<ealib::analysis::lod_fitness_combo>(this);
+
 
 
     }

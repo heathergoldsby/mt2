@@ -1376,17 +1376,34 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
     // get right lod member
     line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
     typename line_of_descent<EA>::iterator i;
+    int lod_step = 0;
+
     if (timepoint == 1) {
         i = lod.end(); --i;
-    } else {
+    } else if (timepoint == 0) {
         i=lod.begin(); i++;
+        lod_step++;
         // find the first to transition
         for( ; i!=lod.end(); i++) {
-            if (i->size() > 2) {
+            lod_step++;
+            if ((timepoint != 0) && (timepoint == lod_step)) {
+                break;
+            }
+            if ((timepoint == 0) && (i->size() > 2)) {
+                break;
+            }
+        }
+    } else {
+        i=lod.begin(); i++;
+        lod_step++;
+        for( ; i!=lod.end(); i++) {
+            lod_step++;
+            if (timepoint == lod_step) {
                 break;
             }
         }
     }
+         
 
 
     int num_rep = 100;

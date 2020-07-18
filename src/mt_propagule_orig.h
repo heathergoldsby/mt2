@@ -43,6 +43,8 @@ LIBEA_MD_DECL(TISSUE_ACCRETION_ADD, "ea.mt.tissue_accretion_add", int); //
 
 LIBEA_MD_DECL(NUM_CELLS_ACCRETED, "ea.mt.num_cells_accreted", int); //
 LIBEA_MD_DECL(TIME_DELAY, "ea.mt.time_delay", int); //
+LIBEA_MD_DECL(ORGANISM_ID, "ea.mt.organism_id", int); // id used to track organisms
+LIBEA_MD_DECL(ORGANISM_PARENT_ID, "ea.mt.organism_parent_id", int); // id used to track an organisms parent
 
 
 
@@ -644,7 +646,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         int ru = 1;
         if ((mea.current_update() % ru) == 0) {
 
-
+            int current_metapop_size = mea.population().size();
             // See if any subpops have exceeded the resource threshold
             typename MEA::population_type offspring;
             for(typename MEA::iterator i=mea.begin(); i!=mea.end(); ++i) {
@@ -706,6 +708,8 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     typename MEA::individual_ptr_type p = mea.make_individual();
                     p->initialize(mea.md());
                     p->reset_rng(mea.rng().uniform_integer());
+                    
+                    int parent_id = get<ORGANISM_ID>(*i,0);
 
                     int total_workload = 0;
                     for(typename propagule_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
@@ -716,6 +720,10 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                             if (!germ_present){
                                 typename MEA::subpopulation_type::genome_type r((*j)->genome().begin(), (*j)->genome().begin()+(*j)->hw().original_size());
                                 typename MEA::subpopulation_type::individual_ptr_type q = p->make_individual(r);
+                                put<ORGANISM_ID>(current_metapop_size, *p);
+                                put<ORGANISM_PARENT_ID>(parent_id, *p);
+                                current_metapop_size++;
+
                                 
                                 inherits_from(**j, *q, *p);
                                 

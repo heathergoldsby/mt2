@@ -130,6 +130,8 @@ namespace ealib {
         .add_field("count")
         .add_field("iteration")
         .add_field("multicell_count")
+        .add_field("organism_id")
+        .add_field("organism_parent_id")
         ;
         for (int q=0; q<100; q++){
             df6.add_field(std::to_string(q));
@@ -240,6 +242,8 @@ namespace ealib {
             for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
                 total_cells += j->size();
                 int cell_count = 0;
+                int org_id = get<ORGANISM_ID>(*j,0);
+                int org_parent_id = get<ORGANISM_PARENT_ID>(*j, 0);
                 
                 if (track_details) {
                         typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
@@ -247,7 +251,9 @@ namespace ealib {
                         df6.write(timepoint)
                         .write(0)
                         .write(nr)
-                        .write(multicell_count);
+                        .write(multicell_count)
+                        .write(org_id)
+                        .write(org_parent_id);
 
                         for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
                             df6.write(*k2)

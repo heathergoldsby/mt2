@@ -22,7 +22,7 @@
 //#include "shannon_mutual_lod_tasks_orgs.h"
 //#include "lod_knockouts.h"
 //#include "multi_birth_selfrep_not_ancestor.h"
-#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
+//#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/subpopulation_founder.h>
 #include <ea/digital_evolution/utils/resource_consumption.h>
@@ -97,6 +97,8 @@ struct lifecycle : public default_lifecycle {
         add_event<task_resource_consumption>(ea);
         add_event<task_switching_cost>(ea);
         add_event<ts_birth_event>(ea);
+        add_event<task_profile_tracking>(ea);
+        add_event<task_profile_birth_event>(ea);
 
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
@@ -249,6 +251,7 @@ public:
         //add_tool<ealib::analysis::lod_knockouts>(this);
         add_tool<ealib::analysis::lod_entrench_add>(this);
         add_tool<ealib::analysis::lod_fitness_combo>(this);
+        add_tool<ealib::analysis::lod_task_switching_dol>(this);
 
 
 

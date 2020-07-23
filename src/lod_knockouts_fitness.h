@@ -15,6 +15,7 @@
 //#include <ea/digital_evolution/discrete_spatial_environment.h>
 #include <ea/digital_evolution/environment.h>
 #include <ea/digital_evolution/hardware.h>
+#include <ea/math/information.h>
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/stats.hpp>
@@ -1472,6 +1473,130 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
             
     }// end for
 }//end lod
+    
+    
+    LIBEA_ANALYSIS_TOOL(lod_task_switching_dol) {
+        
+        datafile df("lod_dol.dat");
+
+        df.add_field("timepoint")
+        .add_field("tech_rep")
+        .add_field("num_propagules")
+        .add_field("cur_update")
+        .add_field("time_since_last_rep")
+        .add_field("multicell_size")
+        .add_field("germ_count")
+        .add_field("num_task_switches")
+        .add_field("shannon_mutual_info");
+        
+
+        int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
+        std::vector<std::string> tps;
+
+        // get right lod member
+        line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
+        typename line_of_descent<EA>::iterator i;
+        int lod_step = 0;
+
+        if (timepoint == 1) {
+            i = lod.end(); --i;
+        } else if (timepoint == 0) {
+            i=lod.begin(); i++;
+            lod_step++;
+            // find the first to transition
+            for( ; i!=lod.end(); i++) {
+                lod_step++;
+                if ((timepoint != 0) && (timepoint == lod_step)) {
+                    break;
+                }
+                if ((timepoint == 0) && (i->size() > 2)) {
+                    break;
+                }
+            }
+        } else {
+            i=lod.begin(); i++;
+            lod_step++;
+            for( ; i!=lod.end(); i++) {
+                lod_step++;
+                if (timepoint == lod_step) {
+                    break;
+                }
+            }
+        }
+             
+
+
+        int num_rep = 100;
+        for (int nr = 0; nr < num_rep; nr++) {
+
+            typename EA::individual_ptr_type control_ea = ea.make_individual(*i->traits().founder());
+            control_ea->initialize(ea.md());
+            control_ea->reset_rng(ea.rng().uniform_integer());
+
+            // run until X replication events have 'happened'. Really, but happened, here we just add the resources back in.
+            int cur_update = 0;
+            int time_since_last_rep = 0;
+            int update_max = 2000;
+            int num_replications = 0;
+            float ts = 0;
+            //
+            while ((cur_update < update_max) && (num_replications < 5)) {
+                control_ea->update();
+                ++cur_update;
+                ++time_since_last_rep;
+
+
+                if (get<DIVIDE_REMOTE>(*control_ea,0)) {
+                    num_replications++;
+
+                    int germ_count = 0;
+
+                    typedef typename EA::subpopulation_type::population_type subpop_type;
+
+                    for(typename subpop_type::iterator m=control_ea->population().begin(); m!=control_ea->population().end(); ++m) {
+                        typename EA::subpopulation_type::individual_type& org=**m;
+                        tps.push_back(get<TASK_PROFILE>(m,""));
+                        ts += get<NUM_SWITCHES>(m, 0);
+
+                        if (get<GERM_STATUS>(org, true)) {
+                            ++germ_count;
+                            
+                        }
+                    }
+                    
+                    float shannon_sum = 0;
+                    for (int m = 0; m < tps.size(); m++) {
+                        for (int n = m+1; n < tps.size(); n++){
+                            shannon_sum += math::mutual_information(tps[m], tps[n]);
+                        }
+                    }
+                    
+                    float mean_task_switches = ts/control_ea->size();
+
+                    df.write(timepoint)
+                    .write(nr)
+                    .write(num_replications)
+                    .write(cur_update)
+                    .write(time_since_last_rep)
+                    .write(control_ea->size())
+                    .write(germ_count)
+                    .write(ts)
+                    .write(mean_task_switches)
+                    .write(shannon_sum);
+                    df.endl();
+
+
+                    control_ea->resources().reset();
+                    put<GROUP_RESOURCE_UNITS>(0,*control_ea);
+                    put<DIVIDE_REMOTE>(0,*control_ea);
+                    time_since_last_rep = 0;
+
+                }
+            }
+                
+        }// end for
+    }//end lod
+    
     
     LIBEA_ANALYSIS_TOOL(lod_report_gs) {
         

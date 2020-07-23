@@ -251,7 +251,7 @@ public:
         //add_tool<ealib::analysis::lod_knockouts>(this);
         add_tool<ealib::analysis::lod_entrench_add>(this);
         add_tool<ealib::analysis::lod_fitness_combo>(this);
-        //add_tool<ealib::analysis::lod_task_switching_dol>(this);
+        add_tool<ealib::analysis::lod_task_switching_dol>(this);
 
 
 

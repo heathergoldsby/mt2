@@ -1486,8 +1486,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         .add_field("time_since_last_rep")
         .add_field("multicell_size")
         .add_field("germ_count")
-        .add_field("num_task_switches")
-        .add_field("shannon_mutual_info");
+        .add_field("num_task_switches");
+        //.add_field("shannon_mutual_info");
         
 
         int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
@@ -1532,6 +1532,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
             typename EA::individual_ptr_type control_ea = ea.make_individual(*i->traits().founder());
             control_ea->initialize(ea.md());
             control_ea->reset_rng(ea.rng().uniform_integer());
+            //add_event<task_profile_tracking>(*control_ea);
+            //add_event<task_profile_birth_event>(*control_ea);
 
             // run until X replication events have 'happened'. Really, but happened, here we just add the resources back in.
             int cur_update = 0;
@@ -1564,13 +1566,13 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                         }
                     }
                     
-                    float shannon_sum = 0;
-                    for (int m = 0; m < tps.size(); m++) {
-                        for (int n = m+1; n < tps.size(); n++){
-                            //shannon_sum += math::mutual_information(tps[m], tps[n]);
-                            shannon_sum = 0;
-                        }
-                    }
+//                    float shannon_sum = 0;
+//                    for (int m = 0; m < tps.size(); m++) {
+//                        for (int n = m+1; n < tps.size(); n++){
+//                            shannon_sum += math::mutual_information(tps[m], tps[n]);
+//                            //shannon_sum = 0;
+//                        }
+//                    }
                     
                     float mean_task_switches = ts/control_ea->size();
 
@@ -1582,8 +1584,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                     .write(control_ea->size())
                     .write(germ_count)
                     .write(ts)
-                    .write(mean_task_switches)
-                    .write(shannon_sum);
+                    .write(mean_task_switches);
+                    //.write(shannon_sum);
                     df.endl();
 
 

@@ -23,13 +23,13 @@
 //#include "lod_knockouts.h"
 //#include "multi_birth_selfrep_not_ancestor.h"
 //#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
-#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
+//##include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/subpopulation_founder.h>
 #include <ea/digital_evolution/utils/resource_consumption.h>
 #include <ea/digital_evolution/utils/task_switching.h>
 #include <ea/digital_evolution.h>
 #include <ea/cmdline_interface.h>
-#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
+//#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
 #include <ea/subpopulation_founder.h>
 #include <ea/line_of_descent.h>
 #include <ea/generational_models/periodic_competition.h>
@@ -251,7 +251,7 @@ public:
         //add_tool<ealib::analysis::lod_knockouts>(this);
         add_tool<ealib::analysis::lod_entrench_add>(this);
         add_tool<ealib::analysis::lod_fitness_combo>(this);
-        add_tool<ealib::analysis::lod_task_switching_dol>(this);
+        //add_tool<ealib::analysis::lod_task_switching_dol>(this);
 
 
 

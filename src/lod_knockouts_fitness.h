@@ -1474,7 +1474,7 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
     }// end for
 }//end lod
     
-    
+  
     LIBEA_ANALYSIS_TOOL(lod_task_switching_dol) {
         
         datafile df("lod_dol.dat");
@@ -1555,8 +1555,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
 
                     for(typename subpop_type::iterator m=control_ea->population().begin(); m!=control_ea->population().end(); ++m) {
                         typename EA::subpopulation_type::individual_type& org=**m;
-                        tps.push_back(get<TASK_PROFILE>(m,""));
-                        ts += get<NUM_SWITCHES>(m, 0);
+                        tps.push_back(get<TASK_PROFILE>(org,""));
+                        ts += get<NUM_SWITCHES>(org, 0);
 
                         if (get<GERM_STATUS>(org, true)) {
                             ++germ_count;
@@ -1567,7 +1567,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                     float shannon_sum = 0;
                     for (int m = 0; m < tps.size(); m++) {
                         for (int n = m+1; n < tps.size(); n++){
-                            shannon_sum += math::mutual_information(tps[m], tps[n]);
+                            //shannon_sum += math::mutual_information(tps[m], tps[n]);
+                            shannon_sum = 0;
                         }
                     }
                     
@@ -1595,6 +1596,7 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
             }
                 
         }// end for
+ 
     }//end lod
     
     

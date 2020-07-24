@@ -1486,7 +1486,18 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         .add_field("time_since_last_rep")
         .add_field("multicell_size")
         .add_field("germ_count")
-        .add_field("num_task_switches");
+        .add_field("num_task_switches")
+        .add_field("not")
+        .add_field("nand")
+        .add_field("and")
+        .add_field("ornot")
+        .add_field("or")
+        .add_field("andnot")
+        .add_field("nor")
+        .add_field("xor")
+        .add_field("equals")
+        .add_field("total_tasks")
+        .add_field("dol_metric");
         //.add_field("shannon_mutual_info");
         
 
@@ -1542,6 +1553,16 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
             int num_replications = 0;
             float ts = 0;
             //
+            int t_not = 0;
+            int t_nand = 0;
+            int t_and = 0;
+            int t_ornot = 0;
+            int t_or = 0;
+            int t_andnot = 0;
+            int t_nor = 0;
+            int t_xor = 0;
+            int t_equals = 0;
+            
             while ((cur_update < update_max) && (num_replications < 5)) {
                 control_ea->update();
                 ++cur_update;
@@ -1559,6 +1580,16 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                         typename EA::subpopulation_type::individual_type& org=**m;
                         tps.push_back(get<TASK_PROFILE>(org,""));
                         ts += get<NUM_SWITCHES>(org, 0);
+                        
+                        t_not += get<TASK_NOT>(org, 0.0);
+                        t_nand += get<TASK_NAND>(org, 0.0);
+                        t_and += get<TASK_AND>(org, 0.0);
+                        t_ornot += get<TASK_ORNOT>(org, 0.0);
+                        t_or += get<TASK_OR>(org, 0.0);
+                        t_andnot += get<TASK_ANDNOT>(org, 0.0);
+                        t_nor += get<TASK_NOR>(org, 0.0);
+                        t_xor += get<TASK_XOR>(org, 0.0);
+                        t_equals += get<TASK_EQUALS>(org, 0.0);
 
                         if (get<GERM_STATUS>(org, true)) {
                             ++germ_count;
@@ -1575,6 +1606,7 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
 //                    }
                     
                     float mean_task_switches = ts/control_ea->size();
+                    float total_tasks = t_not + t_nand + t_and + t_ornot + t_nor + t_xor + t_equals;
 
                     df.write(timepoint)
                     .write(nr)
@@ -1584,7 +1616,18 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                     .write(control_ea->size())
                     .write(germ_count)
                     .write(ts)
-                    .write(mean_task_switches);
+                    .write(mean_task_switches)
+                    .write(t_not)
+                    .write(t_nand)
+                    .write(t_and)
+                    .write(t_ornot)
+                    .write(t_or)
+                    .write(t_andnot)
+                    .write(t_nor)
+                    .write(t_xor)
+                    .write(t_equals)
+                    .write(total_tasks)
+                    .write(total_tasks/mean_task_switches);
                     //.write(shannon_sum);
                     df.endl();
 

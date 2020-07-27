@@ -1499,7 +1499,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         .add_field("equals")
         .add_field("total_tasks")
         .add_field("dol_metric")
-        .add_field("shannon_mutual_info");
+        .add_field("shannon_mutual_info")
+        .add_field("shannon_mutual_info_norm");
         
 
         int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
@@ -1576,16 +1577,14 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                     int germ_count = 0;
 
                     typedef typename EA::subpopulation_type::population_type subpop_type;
+                    std::vector< std::vector<double> > pij;
+                    std::vector<double> pj (9);
+                    double pop_count = 0;
+                    double active_pop = 0;
 
                     for(typename subpop_type::iterator m=control_ea->population().begin(); m!=control_ea->population().end(); ++m) {
                         typename EA::subpopulation_type::individual_type& org=**m;
-                        std::string taskpro =get<TASK_PROFILE>(org,"");
-                        /*taskpro = taskpro.substr(0, 100);
-                        if (taskpro.length() % 2) {
-                            int length = taskpro.length();
-                            taskpro = taskpro.substr(0, length-1);
-                        }*/
-                        tps.push_back(taskpro);
+
 
                         //tps.push_back(get<TASK_PROFILE>(org,""));
                         ts += get<NUM_SWITCHES>(org, 0);
@@ -1604,24 +1603,84 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                             ++germ_count;
                             
                         }
-                    }
                     
-                    float shannon_sum = 0;
-                    for (int m = 0; m < tps.size(); m++) {
-                        for (int n = m+1; n < tps.size(); n++){
-                            std::string tp1 = tps[m];
-                            std::string tp2 = tps[n];
-                            if (tps[m].length() > tps[n].length()) {
-                                shannon_sum += math::mutual_information(tps[m], tps[n]);
-                            } else {
-                                shannon_sum += math::mutual_information(tps[n], tps[m]);
+                        ++pop_count;
+                        std::vector<double> porg (9);
+                        porg[0] = get<TASK_NOT>(org,0.0);
+                        porg[1] = get<TASK_NAND>(org,0.0);
+                        porg[2] = get<TASK_AND>(org,0.0);
+                        porg[3] = get<TASK_ORNOT>(org,0.0);
+                        porg[4] = get<TASK_OR>(org,0.0);
+                        porg[5] = get<TASK_ANDNOT>(org,0.0);
+                        porg[6] = get<TASK_NOR>(org,0.0);
+                        porg[7] = get<TASK_XOR>(org,0.0);
+                        porg[8] = get<TASK_EQUALS>(org,0.0);
+                        
+                        double total_num_tasks = std::accumulate(porg.begin(), porg.end(), 0);
+                        
+                        // Normalize the tasks and add to matrix
+                        if(total_num_tasks > 0) {
+                            for (unsigned int k=0; k<porg.size(); ++k) {
+                                porg[k] /= total_num_tasks;
                             }
-                            //shannon_sum = 0;
+                            ++active_pop;
+                            pij.push_back(porg);
                         }
                     }
+                        
+                    double shannon_sum = 0.0;
+                    double shannon_norm = 0.0;
+                    if (active_pop > 1) {
+                        // figure out pj
+                        for (unsigned int k=0; k<pj.size(); ++k) {
+                            for (int m=0; m<active_pop; ++m) {
+                                pj[k] += pij[m][k];
+                            }
+                            pj[k] /= active_pop;
+                        }
+                        
+                        // compute shannon mutual information based on matrix...
+                        double shannon_change = 0.0;
+                        double t_pij = 0.0;
+                        double t_pi = 1.0/active_pop;
+                        double t_pj = 0;
+                        double pij_sum = 0.0;
+                        // calculate shannon mutual information
+                        for (unsigned int i=0; i<active_pop; i++) {
+                            for (int j=0; j<pj.size(); j++) {
+                                t_pij = pij[i][j]/active_pop;
+                                t_pj = pj[j];
+                                pij_sum += t_pij;
+                                if (t_pi && t_pj && t_pij) {
+                                    shannon_change= (t_pij * log(t_pij / (t_pi * t_pj)));
+                                    shannon_sum += shannon_change;
+                                }
+                            }
+                        }
+                    }
+                    if ((shannon_sum > 0 ) &&(active_pop > 0)) {
+                        shannon_norm = shannon_sum / log((double)active_pop);
+                    }
+                        
+//                        shannon_sum_all += shannon_sum;
+//                        shannon_norm_all += shannon_norm;
+//                        active_pop_all += active_pop;
+//                        pop_count_all += pop_count;
+//
+//
+//                    }
+//                    _df.write(shannon_sum_all / num_multis)
+//                    .write(shannon_norm_all / num_multis)
+//                    .write(active_pop_all / num_multis)
+//                    .write(pop_count_all / num_multis);
+//                    _df.endl();
+            
+            
+                    
+                   
                     
                     float mean_task_switches = ts/control_ea->size();
-                    float total_tasks = t_not + t_nand + t_and + t_ornot + t_nor + t_xor + t_equals;
+                    float total_tasks = t_not + t_nand + t_and + t_ornot + t_nor + t_xor + t_equals + t_andnot + t_or;
 
                     df.write(timepoint)
                     .write(nr)
@@ -1643,7 +1702,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                     .write(t_equals)
                     .write(total_tasks)
                     .write(total_tasks/mean_task_switches)
-                    .write(shannon_sum);
+                    .write(shannon_sum)
+                    .write(shannon_norm);
                     df.endl();
 
 

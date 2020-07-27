@@ -1503,7 +1503,6 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         
 
         int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
-        std::vector<std::string> tps;
 
         // get right lod member
         line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
@@ -1540,6 +1539,7 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
 
         int num_rep = 100;
         for (int nr = 0; nr < num_rep; nr++) {
+            std::vector<std::string> tps;
 
             typename EA::individual_ptr_type control_ea = ea.make_individual(*i->traits().founder());
             control_ea->initialize(ea.md());

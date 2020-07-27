@@ -65,7 +65,7 @@ DIGEVO_INSTRUCTION_DECL(if_res_less_than_thresh) {
 
 /* Divide remote only works if there are enough resources... */
 DIGEVO_INSTRUCTION_DECL(h_divide_remote) {
-    get<TASK_PROFILE>(*p,"") += "P";
+    //get<TASK_PROFILE>(*p,"") += "P";
 
     if(hw.age() >= (0.8 * hw.original_size())) {
         typename Hardware::genome_type& r=hw.repr();
@@ -181,7 +181,7 @@ DIGEVO_INSTRUCTION_DECL(h_divide_local) {
 
 
 DIGEVO_INSTRUCTION_DECL(h_divide_local) {
-    get<TASK_PROFILE>(*p,"") += "R";
+    //get<TASK_PROFILE>(*p,"") += "R";
 
     if(hw.age() >= (0.8 * hw.original_size())) {
         typename Hardware::genome_type& r=hw.repr();

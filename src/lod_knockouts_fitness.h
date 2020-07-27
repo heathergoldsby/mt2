@@ -1487,6 +1487,7 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         .add_field("multicell_size")
         .add_field("germ_count")
         .add_field("num_task_switches")
+        .add_field("mean_task_switches")
         .add_field("not")
         .add_field("nand")
         .add_field("and")
@@ -1497,8 +1498,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
         .add_field("xor")
         .add_field("equals")
         .add_field("total_tasks")
-        .add_field("dol_metric");
-        //.add_field("shannon_mutual_info");
+        .add_field("dol_metric")
+        .add_field("shannon_mutual_info");
         
 
         int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
@@ -1578,7 +1579,15 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
 
                     for(typename subpop_type::iterator m=control_ea->population().begin(); m!=control_ea->population().end(); ++m) {
                         typename EA::subpopulation_type::individual_type& org=**m;
-                        tps.push_back(get<TASK_PROFILE>(org,""));
+                        std::string taskpro =get<TASK_PROFILE>(org,"");
+                        /*taskpro = taskpro.substr(0, 100);
+                        if (taskpro.length() % 2) {
+                            int length = taskpro.length();
+                            taskpro = taskpro.substr(0, length-1);
+                        }*/
+                        tps.push_back(taskpro);
+
+                        //tps.push_back(get<TASK_PROFILE>(org,""));
                         ts += get<NUM_SWITCHES>(org, 0);
                         
                         t_not += get<TASK_NOT>(org, 0.0);
@@ -1597,13 +1606,19 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                         }
                     }
                     
-//                    float shannon_sum = 0;
-//                    for (int m = 0; m < tps.size(); m++) {
-//                        for (int n = m+1; n < tps.size(); n++){
-//                            shannon_sum += math::mutual_information(tps[m], tps[n]);
-//                            //shannon_sum = 0;
-//                        }
-//                    }
+                    float shannon_sum = 0;
+                    for (int m = 0; m < tps.size(); m++) {
+                        for (int n = m+1; n < tps.size(); n++){
+                            std::string tp1 = tps[m];
+                            std::string tp2 = tps[n];
+                            if (tps[m].length() > tps[n].length()) {
+                                shannon_sum += math::mutual_information(tps[m], tps[n]);
+                            } else {
+                                shannon_sum += math::mutual_information(tps[n], tps[m]);
+                            }
+                            //shannon_sum = 0;
+                        }
+                    }
                     
                     float mean_task_switches = ts/control_ea->size();
                     float total_tasks = t_not + t_nand + t_and + t_ornot + t_nor + t_xor + t_equals;
@@ -1627,8 +1642,8 @@ LIBEA_ANALYSIS_TOOL(lod_dol) {
                     .write(t_xor)
                     .write(t_equals)
                     .write(total_tasks)
-                    .write(total_tasks/mean_task_switches);
-                    //.write(shannon_sum);
+                    .write(total_tasks/mean_task_switches)
+                    .write(shannon_sum);
                     df.endl();
 
 

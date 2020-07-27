@@ -947,7 +947,7 @@ namespace ealib {
                     
                 }
                 
-                add_ent *= 2;
+                add_ent += 100;
                 if (add_ent >= 1024) {
                     entrench_not_found = false;
                 }

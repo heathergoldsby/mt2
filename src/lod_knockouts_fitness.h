@@ -134,6 +134,17 @@ namespace ealib {
         .add_field("organism_id")
         .add_field("organism_parent_id")
         ;
+        
+        datafile df7("unicell_genomes.dat");
+        df7.add_field("timepoint")
+        .add_field("count")
+        .add_field("iteration")
+        .add_field("multicell_count")
+        .add_field("num_uni")
+        .add_field("organism_id")
+        .add_field("organism_parent_id")
+        ;
+        
         for (int q=0; q<100; q++){
             df6.add_field(std::to_string(q));
         }
@@ -401,6 +412,8 @@ namespace ealib {
                     
                     for (int nr = 0; nr < num_rep; nr++) {
                         typename EA::individual_ptr_type knockout_loc2 = ea.make_individual(*i->traits().founder());
+                        knockout_loc2->traits()._founder = i->traits().founder();
+
                         put<IND_REP_THRESHOLD>(get<IND_REP_THRESHOLD>(ea,0), *knockout_loc2);
                         put<COST_START_UPDATE>(get<COST_START_UPDATE>(ea,0), *knockout_loc2);
                         knockout_loc2->population()[0]->genome()[z] = q;
@@ -445,7 +458,8 @@ namespace ealib {
                         std::swap(metapop.population(), init_mc);
                         
                         add_event<mt_gls_propagule>(metapop);
-                        
+                        add_event<subpopulation_founder_event>(metapop);
+
                         int max_size = 32;
                         int max_update = 50000;
                         cur_update = 0;
@@ -462,9 +476,55 @@ namespace ealib {
                         int multicell_count = 0;
                         typedef typename EA::subpopulation_type::population_type subpop_type;
                         
+                        /*
+                         for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
+                         total_cells += j->size();
+                         int cell_count = 0;
+                         int org_id = get<ORGANISM_ID>(*j,0);
+                         int org_parent_id = get<ORGANISM_PARENT_ID>(*j, 0);
+                         
+                         if (track_details) {
+                                 typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
+
+                                 df6.write(timepoint)
+                                 .write(0)
+                                 .write(nr)
+                                 .write(multicell_count)
+                                 .write(org_id)
+                                 .write(org_parent_id);
+
+                                 for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                     df6.write(*k2)
+                                     .write(" ");
+                                 }
+                                 df6.endl();
+                         }
+*/
+                        
                         for(typename EA::iterator j=metapop.begin(); j!=metapop.end(); ++j) {
                             total_cells += j->size();
                             int cell_count = 0;
+                            int org_id = get<ORGANISM_ID>(*j,0);
+                            int org_parent_id = get<ORGANISM_PARENT_ID>(*j, 0);
+                            
+                            if (track_details) {
+                                    typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
+
+                                    df7.write(timepoint)
+                                    .write(0)
+                                    .write(nr)
+                                    .write(multicell_count)
+                                    .write(num_uni)
+                                    .write(org_id)
+                                    .write(org_parent_id);
+
+                                    for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                        df7.write(*k2)
+                                        .write(" ");
+                                    }
+                                    df7.endl();
+                            }
+                            
                             for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
                                 
                                 typename EA::subpopulation_type::individual_type& org=**m;
@@ -491,6 +551,8 @@ namespace ealib {
                                     .write(get<GROUP_RESOURCE_UNITS>(*j,0.0))
                                     .write(total_workload);
                                     df4.endl();
+                                    
+                                    
                                 }
                                 cell_count++;
                             }

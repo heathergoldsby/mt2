@@ -201,7 +201,7 @@ namespace ealib {
             
             
             metapop.initialize(md);
-            put<METAPOPULATION_SIZE>(32, metapop);
+            put<METAPOPULATION_SIZE>(100, metapop);
             put<RUN_UPDATES>(10000, metapop);
             put<RNG_SEED>(nr, metapop);
             

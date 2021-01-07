@@ -594,7 +594,7 @@ struct mt_propagule : end_of_update_event<MEA> {
 template <typename MEA>
 struct mt_gls_propagule : end_of_update_event<MEA> {
     //! Constructor.
-    mt_gls_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt_gls.dat") {
+    mt_gls_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt_gls.dat"), _df2("mt_gls_detail.dat") {
         _df.add_field("update")
         .add_field("mean_rep_time")
         .add_field("mean_res")
@@ -620,6 +620,14 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         .add_field("num_orgs")
         .add_field("mean_generation");
         
+        _df2.add_field("update")
+        .add_field("org_replicating_id")
+        .add_field("workload")
+        .add_field("org_size")
+        .add_field("germ_size")
+        .add_field("germ_workload")
+        .add_field("soma_workload");
+        
         num_rep = 0;
     }
     
@@ -630,7 +638,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
     
     //! Perform germline replication among populations.
     virtual void operator()(MEA& mea) {
-        
+        int track_details = get<TRACK_DETAILS>(mea,0);
         
         configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(mea));
 
@@ -700,8 +708,8 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     
                     int germ_count = 0;
                     int pop_count = 0;
-                    accumulator_set<double, stats<tag::mean, tag::variance> > germ_workload_acc;
-                    accumulator_set<double, stats<tag::mean, tag::variance> > soma_workload_acc;
+                    accumulator_set<double, stats<tag::sum, tag::mean, tag::variance> > germ_workload_acc;
+                    accumulator_set<double, stats<tag::sum, tag::mean, tag::variance> > soma_workload_acc;
 
                     
                     // get a new subpopulation:
@@ -712,6 +720,21 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     int parent_id = get<ORGANISM_ID>(*i,0);
 
                     int total_workload = 0;
+                    
+                    // record founder propagule
+                    if (track_details) {
+                        _df2.write(mea.current_update());
+                        // This is the founder genome.
+                        typename MEA::subpopulation_type::individual_type& k_org=**i->traits().founder()->population().begin();
+                        
+                        _df2.write("\"");
+                        for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                            _df2.write(*k2)
+                            .write(" ");
+                        }
+                        _df2.write("\"");
+                    }
+                    
                     for(typename propagule_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                         typename MEA::subpopulation_type::individual_type& org=**j;
                         if (get<GERM_STATUS>(org, true)) {
@@ -719,7 +742,27 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                             germ_workload_acc(get<WORKLOAD>(org, 0.0));
                             if (!germ_present){
                                 typename MEA::subpopulation_type::genome_type r((*j)->genome().begin(), (*j)->genome().begin()+(*j)->hw().original_size());
+                                // This is the parent genome.
+                                typename MEA::subpopulation_type::individual_type& k_org=**j;
+                                _df2.write("\"");
+                                for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                   _df2.write(*k2)
+                                   .write(" ");
+                                }
+                                _df2.write("\"");
+                                
+                                
+                                
                                 typename MEA::subpopulation_type::individual_ptr_type q = p->make_individual(r);
+                                // offspring genome
+                                _df2.write("\"");
+                                  for(typename MEA::subpopulation_type::genome_type::iterator k2=q->genome().begin(); k2!=q->genome().end(); ++k2) {
+                                     _df2.write(*k2)
+                                     .write(" ");
+                                  }
+                                  _df2.write("\"");
+                                
+                                
                                 put<ORGANISM_ID>(current_metapop_size, *p);
                                 put<ORGANISM_PARENT_ID>(parent_id, *p);
                                 current_metapop_size++;
@@ -788,7 +831,24 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     put<REPLICATION_STATE_INDEX>(get<REPLICATION_STATE_INDEX>(*i,0),*p);
                     put<ARCHIVE_MARK>(get<ARCHIVE_MARK>(*i,0),*p);
                     
-
+                    if (track_details) {
+                        _df2.write(mea.current_update())
+                        .write(get<MULTICELL_REP_TIME>(*i))
+                        .write(total_workload)
+                        .write(pop_count)
+                        .write(germ_count)
+                        .write(sum(germ_workload_acc))
+                        .write(sum(soma_workload_acc));
+                        
+//                        for(typename EA::subpopulation_type::genome_type::iterator k2=org.genome().begin(); k2!=org.genome().end(); ++k2) {
+//                            df4.write(*k2)
+//                            .write(" ");
+//                        }
+                        
+                        
+                        _df2.endl();
+                        
+                    }
                     
                     offspring.insert(offspring.end(),p);
                     
@@ -923,6 +983,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
     }
     
     datafile _df;
+    datafile _df2;
     std::deque<double> multicell_rep;
     std::deque<double> multicell_res;
     std::deque<double> multicell_size;

@@ -22,6 +22,7 @@
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
 
+#include "gls.h"
 
 LIBEA_MD_DECL(LOD_START_ANALYSIS, "ea.mt.lod_start_analysis", int);
 LIBEA_MD_DECL(LOD_END_ANALYSIS, "ea.mt.lod_end_analysis", int);
@@ -30,7 +31,6 @@ LIBEA_MD_DECL(ANALYSIS_LOD_START_COST, "ea.mt.lod_start_cost", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE, "ea.mt.lod_timepoint_to_analyze", int);
 LIBEA_MD_DECL(ANALYSIS_LOD_START_REP, "ea.mt.lod_analysis_start_rep", int);
 LIBEA_MD_DECL(ANALYSIS_MUTATIONS_OFF, "ea.mt.lod_analysis_mutations_off", int);
-LIBEA_MD_DECL(TRACK_DETAILS, "ea.mt.track_details", int);
 LIBEA_MD_DECL(ONLY_MC, "ea.mt.only_mc", int);
 
 
@@ -61,11 +61,14 @@ namespace ealib {
         .add_field("update")
         ;
         
+        
         datafile df3("multicell_detail.dat");
         df3.add_field("timepoint")
         .add_field("count")
         .add_field("iteration")
         .add_field("multicell")
+        .add_field("organism_id")
+        .add_field("organism_parend_id")
         .add_field("cell")
         .add_field("workload")
         .add_field("propagule_eligible")
@@ -82,12 +85,17 @@ namespace ealib {
         .add_field("update")
         .add_field("multicell_resources")
         .add_field("total_workload")
+        .add_field("genome")
         ;
         
         datafile df4("unicell_detail.dat");
         df4.add_field("timepoint")
         .add_field("count")
         .add_field("iteration")
+        .add_field("multicell")
+        .add_field("organism_id")
+        .add_field("organism_parend_id")
+        .add_field("cell")
         .add_field("workload")
         .add_field("propagule_eligible")
         .add_field("cell_resources")
@@ -103,6 +111,7 @@ namespace ealib {
         .add_field("update")
         .add_field("multicell_resources")
         .add_field("total_workload")
+        .add_field("genome")
         ;
         
         datafile df5("inviable_unicell_detail.dat");
@@ -125,29 +134,7 @@ namespace ealib {
         .add_field("multicell_resources")
         .add_field("total_workload")
         ;
-        
-        datafile df6("mc_genomes.dat");
-        df6.add_field("timepoint")
-        .add_field("count")
-        .add_field("iteration")
-        .add_field("multicell_count")
-        .add_field("organism_id")
-        .add_field("organism_parent_id")
-        ;
-        
-        datafile df7("unicell_genomes.dat");
-        df7.add_field("timepoint")
-        .add_field("count")
-        .add_field("iteration")
-        .add_field("multicell_count")
-        .add_field("num_uni")
-        .add_field("organism_id")
-        .add_field("organism_parent_id")
-        ;
-        
-        for (int q=0; q<100; q++){
-            df6.add_field(std::to_string(q));
-        }
+
         
         int timepoint = get<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(ea,0);
         int track_details = get<TRACK_DETAILS>(ea,1);
@@ -245,6 +232,9 @@ namespace ealib {
                 ++cur_update;
             }
             
+            std::string new_filename = "mt_gls_detail_mc_" + std::to_string(nr) + ".dat";
+            std::rename("mt_gls_detail.dat", new_filename.c_str());
+                    
             // get workload
             float total_workload = 0;
             float total_cells = 0;
@@ -258,22 +248,43 @@ namespace ealib {
                 int org_parent_id = get<ORGANISM_PARENT_ID>(*j, 0);
                 
                 if (track_details) {
-                        typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
-
-                        df6.write(timepoint)
-                        .write(0)
-                        .write(nr)
-                        .write(multicell_count)
-                        .write(org_id)
-                        .write(org_parent_id);
-
-                        for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
-                            df6.write(*k2)
-                            .write(" ");
-                        }
-                        df6.endl();
+                    
+                    // This is the founder genome.
+                    typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
+                    
+                    df3.write(timepoint)
+                    .write(0)
+                    .write(nr)
+                    .write(multicell_count)
+                    .write(org_id)
+                    .write(org_parent_id)
+                    .write(-1)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0)
+                    .write(0);
+                    
+                    df3.write("\"");
+                    for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                        df3.write(*k2)
+                        .write(" ");
+                    }
+                    df3.write("\"");
+                    
+                    df3.endl();
                 }
-
+                
                 
                 for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {
                     
@@ -284,6 +295,8 @@ namespace ealib {
                         .write(0)
                         .write(nr)
                         .write(multicell_count)
+                        .write(org_id)
+                        .write(org_parent_id)
                         .write(cell_count)
                         .write(get<WORKLOAD>(org, 0.0))
                         .write(get<GERM_STATUS>(org,true))
@@ -300,7 +313,16 @@ namespace ealib {
                         .write(cur_update)
                         .write(get<GROUP_RESOURCE_UNITS>(*j,0.0))
                         .write(total_workload);
+                        
+                        df3.write("\"");
+                        for(typename EA::subpopulation_type::genome_type::iterator k2=org.genome().begin(); k2!=org.genome().end(); ++k2) {
+                            df3.write(*k2)
+                            .write(" ");
+                        }
+                        df3.write("\"");
                         df3.endl();
+                        
+                        
                     }
                     cell_count++;
                 }
@@ -378,8 +400,11 @@ namespace ealib {
                                 
                                 typename EA::subpopulation_type::individual_type& org=**m;
                                 total_workload += get<WORKLOAD>(org, 0.0);
+                                
                                 if (track_details) {
-                                    df5.write(timepoint)
+                                    df4.write(timepoint)
+                                    .write(0)
+                                    .write(0)
                                     .write(0)
                                     .write(0)
                                     .write(0)
@@ -399,7 +424,15 @@ namespace ealib {
                                     .write(cur_update)
                                     .write(get<GROUP_RESOURCE_UNITS>(*knockout_loc,0.0))
                                     .write(total_workload);
-                                    df5.endl();
+                                    df4.write("\"");
+                                    for(typename EA::subpopulation_type::genome_type::iterator k2=org.genome().begin(); k2!=org.genome().end(); ++k2) {
+                                        df4.write(*k2)
+                                        .write(" ");
+                                    }
+                                    df4.write("\"");
+                                    
+                                    
+                                    df4.endl();
                                 }
                             }
                         }
@@ -470,6 +503,10 @@ namespace ealib {
                             ++cur_update;
                         }
                         
+                        
+                        std::string new_filename = "mt_gls_detail_uni_" + std::to_string(num_uni) + "_" + std::to_string(nr) + ".dat";
+                        std::rename("mt_gls_detail.dat", new_filename.c_str());
+                        
                         // get workload
                         float total_workload = 0;
                         int total_cells = 0;
@@ -509,20 +546,37 @@ namespace ealib {
                             
                             if (track_details) {
                                     typename EA::subpopulation_type::individual_type& k_org=**j->traits().founder()->population().begin();
-
-                                    df7.write(timepoint)
+                                
+                                    df4.write(timepoint)
                                     .write(0)
                                     .write(nr)
                                     .write(multicell_count)
-                                    .write(num_uni)
                                     .write(org_id)
-                                    .write(org_parent_id);
-
+                                    .write(org_parent_id)
+                                    .write(-1)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0)
+                                    .write(0);
+                                    
+                                    df4.write("\"");
                                     for(typename EA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
-                                        df7.write(*k2)
+                                        df4.write(*k2)
                                         .write(" ");
                                     }
-                                    df7.endl();
+                                    df4.write("\"");
+                                    df4.endl();
                             }
                             
                             for(typename subpop_type::iterator m=j->population().begin(); m!=j->population().end(); ++m) {

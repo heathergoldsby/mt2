@@ -621,6 +621,9 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         .add_field("mean_generation");
         
         _df2.add_field("update")
+        .add_field("propagule_genome")
+        .add_field("parent_genome")
+        .add_field("offspring_genome")
         .add_field("org_replicating_id")
         .add_field("workload")
         .add_field("org_size")
@@ -832,8 +835,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     put<ARCHIVE_MARK>(get<ARCHIVE_MARK>(*i,0),*p);
                     
                     if (track_details) {
-                        _df2.write(mea.current_update())
-                        .write(get<MULTICELL_REP_TIME>(*i))
+                        _df2.write(get<MULTICELL_REP_TIME>(*i))
                         .write(total_workload)
                         .write(pop_count)
                         .write(germ_count)

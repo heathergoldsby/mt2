@@ -724,19 +724,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
 
                     int total_workload = 0;
                     
-                    // record founder propagule
-                    if (track_details) {
-                        _df2.write(mea.current_update());
-                        // This is the founder genome.
-                        typename MEA::subpopulation_type::individual_type& k_org=**i->traits().founder()->population().begin();
-                        
-                        _df2.write("\"");
-                        for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
-                            _df2.write(*k2)
-                            .write(" ");
-                        }
-                        _df2.write("\"");
-                    }
+
                     
                     for(typename propagule_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                         typename MEA::subpopulation_type::individual_type& org=**j;
@@ -747,23 +735,41 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                                 typename MEA::subpopulation_type::genome_type r((*j)->genome().begin(), (*j)->genome().begin()+(*j)->hw().original_size());
                                 // This is the parent genome.
                                 typename MEA::subpopulation_type::individual_type& k_org=**j;
-                                _df2.write("\"");
-                                for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
-                                   _df2.write(*k2)
-                                   .write(" ");
-                                }
-                                _df2.write("\"");
                                 
+                                // record founder propagule
+                                if (track_details) {
+
+
+                                    _df2.write(mea.current_update());
+                                    // This is the founder genome.
+                                    typename MEA::subpopulation_type::individual_type& k_org=**i->traits().founder()->population().begin();
+                                    
+                                    _df2.write("\"");
+                                    for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                        _df2.write(*k2)
+                                        .write(" ");
+                                    }
+                                    _df2.write("\"");
+                                    
+                                    _df2.write("\"");
+                                    for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                       _df2.write(*k2)
+                                       .write(" ");
+                                    }
+                                    _df2.write("\"");
+                                }
                                 
                                 
                                 typename MEA::subpopulation_type::individual_ptr_type q = p->make_individual(r);
-                                // offspring genome
-                                _df2.write("\"");
-                                  for(typename MEA::subpopulation_type::genome_type::iterator k2=q->genome().begin(); k2!=q->genome().end(); ++k2) {
-                                     _df2.write(*k2)
-                                     .write(" ");
-                                  }
-                                  _df2.write("\"");
+                                if (track_details) {
+                                    // offspring genome
+                                    _df2.write("\"");
+                                      for(typename MEA::subpopulation_type::genome_type::iterator k2=q->genome().begin(); k2!=q->genome().end(); ++k2) {
+                                         _df2.write(*k2)
+                                         .write(" ");
+                                      }
+                                    _df2.write("\"");
+                                }
                                 
                                 
                                 put<ORGANISM_ID>(current_metapop_size, *p);

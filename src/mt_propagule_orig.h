@@ -761,6 +761,17 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                                 
                                 
                                 typename MEA::subpopulation_type::individual_ptr_type q = p->make_individual(r);
+
+                                
+                                put<ORGANISM_ID>(current_metapop_size, *p);
+                                put<ORGANISM_PARENT_ID>(parent_id, *p);
+                                current_metapop_size++;
+
+                                
+                                inherits_from(**j, *q, *p);
+                                
+                                mutate(*q,m,*p);
+                                
                                 if (track_details) {
                                     // offspring genome
                                     _df2.write("\"");
@@ -771,15 +782,6 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                                     _df2.write("\"");
                                 }
                                 
-                                
-                                put<ORGANISM_ID>(current_metapop_size, *p);
-                                put<ORGANISM_PARENT_ID>(parent_id, *p);
-                                current_metapop_size++;
-
-                                
-                                inherits_from(**j, *q, *p);
-                                
-                                mutate(*q,m,*p);
                                 
                                 p->insert(p->end(), q);
                                 

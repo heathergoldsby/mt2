@@ -179,7 +179,7 @@ namespace ealib {
                 
         
         
-        
+        // for 100 reps we run the multicell and gather info. 
         for (int nr = 0; nr < num_rep; nr++) {
             
             // should define checkpoint + analysis input
@@ -215,6 +215,10 @@ namespace ealib {
                 //put<MUTATION_PER_SITE_P>(0, *control_mc);
                 //put<GERM_MUTATION_PER_SITE_P>(0, *control_mc);
             }
+            
+            new_seed = ea.rng().uniform_integer();
+            put<RNG_SEED>(new_seed, *control_mc);
+            control_mc->reset_rng(new_seed);
                         
             typename EA::population_type init_mc;
             init_mc.insert(init_mc.end(),control_mc);
@@ -363,8 +367,9 @@ namespace ealib {
         int num_uni_inviable = 0;
         int num_uni = 0;
         
-        
+        // for 100 places in the genome, we ...
         for (int z =0; z < 100; z++) {
+            // iterate through each instruction in the isa
             for (int q = 0; q < control_ea->isa().size(); q++) {
                 typename EA::individual_ptr_type knockout_loc = ea.make_individual(*i->traits().founder());
                 
@@ -374,11 +379,13 @@ namespace ealib {
                 
                 knockout_loc->population()[0]->genome()[z] = q;
                 
+                // we set our mutation rates to 0 here to see what happens in the absence of mutations.
                 put<TASK_MUTATION_PER_SITE_P>(0, *knockout_loc);
                 put<MUTATION_PER_SITE_P>(0, *knockout_loc);
                 put<GERM_MUTATION_PER_SITE_P>(0, *knockout_loc);
-                
-                
+                int new_seed = ea.rng().uniform_integer();
+                put<RNG_SEED>(new_seed, *knockout_loc);
+                knockout_loc->reset_rng(new_seed);
                 
                 int cur_update = 0;
                 int update_max = 10000;
@@ -390,7 +397,7 @@ namespace ealib {
                 }
                 
                 
-                
+                // if it is a unicell in the absence of mutations, we...
                 if (knockout_loc->population().size() < 2) {
                     num_uni++;
                     float total_workload = 0;
@@ -444,13 +451,15 @@ namespace ealib {
                     
                     num_uni_viable++;
                     
-                    
+                    // for each unicell, we recreate it. Then we knock it out
                     for (int nr = 0; nr < num_rep; nr++) {
                         typename EA::individual_ptr_type knockout_loc2 = ea.make_individual(*i->traits().founder());
                         knockout_loc2->traits()._founder = i->traits().founder();
 
                         put<IND_REP_THRESHOLD>(get<IND_REP_THRESHOLD>(ea,0), *knockout_loc2);
                         put<COST_START_UPDATE>(get<COST_START_UPDATE>(ea,0), *knockout_loc2);
+               
+                        
                         knockout_loc2->population()[0]->genome()[z] = q;
                         
                         if (mutations_off) {
@@ -471,10 +480,13 @@ namespace ealib {
                         metapop.initialize(md);
                         put<METAPOPULATION_SIZE>(32, metapop);
                         put<RUN_UPDATES>(10000, metapop);
-                        int new_seed = ea.rng().uniform_integer();
+                        new_seed = ea.rng().uniform_integer();
                         put<RNG_SEED>(new_seed, metapop);
                         metapop.reset_rng(new_seed);
                         
+                        new_seed = ea.rng().uniform_integer();
+                        put<RNG_SEED>(new_seed, *knockout_loc2);
+                        knockout_loc2->reset_rng(new_seed);
                         
                         if (mutations_off) {
                             put<TASK_MUTATION_PER_SITE_P>(0, metapop);

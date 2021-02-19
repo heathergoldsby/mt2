@@ -144,6 +144,9 @@ namespace ealib {
         line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
         //        typename line_of_descent<EA>::iterator i=lod.begin(); i++;
         
+        
+        
+        
          
         typename line_of_descent<EA>::iterator i;
         int lod_step = 0;
@@ -176,6 +179,7 @@ namespace ealib {
                 
         
         
+        
         for (int nr = 0; nr < num_rep; nr++) {
             
             // should define checkpoint + analysis input
@@ -190,18 +194,16 @@ namespace ealib {
             metapop.initialize(md);
             put<METAPOPULATION_SIZE>(100, metapop);
             put<RUN_UPDATES>(10000, metapop);
-            put<RNG_SEED>(nr, metapop);
+            int new_seed = ea.rng().uniform_integer();
+            put<RNG_SEED>(new_seed, metapop);
+            metapop.reset_rng(new_seed);
             
             if (mutations_off) {
                 put<TASK_MUTATION_PER_SITE_P>(0, metapop);
                 //put<MUTATION_PER_SITE_P>(0, metapop);
                 //put<GERM_MUTATION_PER_SITE_P>(0, metapop);
             }
-            
-            
-            if (nr != 0) {
-                metapop.reset_rng(nr);
-            }
+        
             
             typename EA::individual_ptr_type control_mc = ea.make_individual(*i->traits().founder());
             control_mc->traits()._founder = i->traits().founder();
@@ -469,15 +471,10 @@ namespace ealib {
                         metapop.initialize(md);
                         put<METAPOPULATION_SIZE>(32, metapop);
                         put<RUN_UPDATES>(10000, metapop);
-                        put<RNG_SEED>(nr, metapop);
-                        if (nr != 0) {
-                            metapop.reset_rng(nr);
-                        }
+                        int new_seed = ea.rng().uniform_integer();
+                        put<RNG_SEED>(new_seed, metapop);
+                        metapop.reset_rng(new_seed);
                         
-                        
-                        put<METAPOPULATION_SIZE>(32, metapop);
-                        put<RUN_UPDATES>(10000, metapop);
-                        put<RNG_SEED>(nr, metapop);
                         
                         if (mutations_off) {
                             put<TASK_MUTATION_PER_SITE_P>(0, metapop);

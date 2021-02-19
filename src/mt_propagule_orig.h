@@ -733,13 +733,9 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                             germ_workload_acc(get<WORKLOAD>(org, 0.0));
                             if (!germ_present){
                                 typename MEA::subpopulation_type::genome_type r((*j)->genome().begin(), (*j)->genome().begin()+(*j)->hw().original_size());
-                                // This is the parent genome.
-                                typename MEA::subpopulation_type::individual_type& k_org=**j;
-                                
+                               
                                 // record founder propagule
                                 if (track_details) {
-
-
                                     _df2.write(mea.current_update());
                                     // This is the founder genome.
                                     typename MEA::subpopulation_type::individual_type& k_org=**i->traits().founder()->population().begin();
@@ -751,8 +747,10 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                                     }
                                     _df2.write("\"");
                                     
+                                    // This is the parent genome.
+                                    typename MEA::subpopulation_type::individual_type& k_parent=**j;
                                     _df2.write("\"");
-                                    for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                    for(typename MEA::subpopulation_type::genome_type::iterator k2=k_parent.genome().begin(); k2!=k_parent.genome().end(); ++k2) {
                                        _df2.write(*k2)
                                        .write(" ");
                                     }

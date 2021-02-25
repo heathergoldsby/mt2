@@ -750,7 +750,6 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                                 // record founder propagule
                                 if (track_details) {
                                    
-                                    std::cout << "org id " << org_id << " parent id " << parent_id <<std::endl;
                                     _df2.write(mea.current_update());
                                     // This is the founder genome. It's the cell that serves as the founder of the multicell
                                     typename MEA::subpopulation_type::individual_type& k_org=**i->traits().founder()->population().begin();

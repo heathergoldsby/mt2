@@ -94,7 +94,7 @@ namespace ealib {
         .add_field("iteration")
         .add_field("multicell")
         .add_field("organism_id")
-        .add_field("organism_parend_id")
+        .add_field("organism_parent_id")
         .add_field("cell")
         .add_field("workload")
         .add_field("propagule_eligible")
@@ -441,6 +441,8 @@ namespace ealib {
                                     df4.write("\"");
                                     
                                     
+                                    
+                                    
                                     df4.endl();
                                 }
                             }
@@ -454,7 +456,6 @@ namespace ealib {
                     // for each unicell, we recreate it. Then we knock it out
                     for (int nr = 0; nr < num_rep; nr++) {
                         typename EA::individual_ptr_type knockout_loc2 = ea.make_individual(*i->traits().founder());
-                        knockout_loc2->traits()._founder = i->traits().founder();
 
                         put<IND_REP_THRESHOLD>(get<IND_REP_THRESHOLD>(ea,0), *knockout_loc2);
                         put<COST_START_UPDATE>(get<COST_START_UPDATE>(ea,0), *knockout_loc2);
@@ -497,6 +498,9 @@ namespace ealib {
                         typename EA::population_type init_mc;
                         init_mc.insert(init_mc.end(), knockout_loc2);
                         
+//                        knockout_loc2->traits()._founder = i->traits().founder();
+                        knockout_loc2->traits()._founder = ea.make_individual(*knockout_loc2);
+
                         std::swap(metapop.population(), init_mc);
                         
                         add_event<mt_gls_propagule>(metapop);

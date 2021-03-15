@@ -111,6 +111,8 @@ namespace ealib {
         .add_field("update")
         .add_field("multicell_resources")
         .add_field("total_workload")
+        .add_field("mutation_position")
+        .add_field("mutation_instruction")
         .add_field("genome")
         ;
         
@@ -432,7 +434,9 @@ namespace ealib {
                                     .write(get<TASK_EQUALS>(org,0))
                                     .write(cur_update)
                                     .write(get<GROUP_RESOURCE_UNITS>(*knockout_loc,0.0))
-                                    .write(total_workload);
+                                    .write(total_workload)
+                                    .write(z)
+                                    .write(q);
                                     df4.write("\"");
                                     for(typename EA::subpopulation_type::genome_type::iterator k2=org.genome().begin(); k2!=org.genome().end(); ++k2) {
                                         df4.write(*k2)

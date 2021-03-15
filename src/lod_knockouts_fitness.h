@@ -238,8 +238,10 @@ namespace ealib {
                 ++cur_update;
             }
             
+            if (track_details){
             std::string new_filename = "mt_gls_detail_mc_" + std::to_string(nr) + ".dat";
             std::rename("mt_gls_detail.dat", new_filename.c_str());
+            }
                     
             // get workload
             float total_workload = 0;
@@ -516,9 +518,10 @@ namespace ealib {
                             ++cur_update;
                         }
                         
-                        
+                        if (track_details) {
                         std::string new_filename = "mt_gls_detail_uni_" + std::to_string(num_uni) + "_" + std::to_string(nr) + ".dat";
                         std::rename("mt_gls_detail.dat", new_filename.c_str());
+                        }
                         
                         // get workload
                         float total_workload = 0;

@@ -405,7 +405,6 @@ namespace ealib {
                     float total_workload = 0;
                     if (cur_update == update_max) {
                         num_uni_inviable++;
-                        if (track_details) {
                             typedef typename EA::subpopulation_type::population_type subpop_type;
                             for(typename subpop_type::iterator m=knockout_loc->population().begin(); m!=knockout_loc->population().end(); ++m) {
                                 
@@ -450,7 +449,6 @@ namespace ealib {
                                     df4.endl();
                                 }
                             }
-                        }
                         continue;
                     }
                     

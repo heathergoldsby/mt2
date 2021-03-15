@@ -111,8 +111,6 @@ namespace ealib {
         .add_field("update")
         .add_field("multicell_resources")
         .add_field("total_workload")
-        .add_field("mutation_position")
-        .add_field("mutation_instruction")
         .add_field("genome")
         ;
         
@@ -405,6 +403,7 @@ namespace ealib {
                     float total_workload = 0;
                     if (cur_update == update_max) {
                         num_uni_inviable++;
+                        if (track_details) {
                             typedef typename EA::subpopulation_type::population_type subpop_type;
                             for(typename subpop_type::iterator m=knockout_loc->population().begin(); m!=knockout_loc->population().end(); ++m) {
                                 
@@ -433,9 +432,7 @@ namespace ealib {
                                     .write(get<TASK_EQUALS>(org,0))
                                     .write(cur_update)
                                     .write(get<GROUP_RESOURCE_UNITS>(*knockout_loc,0.0))
-                                    .write(total_workload)
-                                    .write(z)
-                                    .write(q);
+                                    .write(total_workload);
                                     df4.write("\"");
                                     for(typename EA::subpopulation_type::genome_type::iterator k2=org.genome().begin(); k2!=org.genome().end(); ++k2) {
                                         df4.write(*k2)
@@ -449,6 +446,7 @@ namespace ealib {
                                     df4.endl();
                                 }
                             }
+                        }
                         continue;
                     }
                     

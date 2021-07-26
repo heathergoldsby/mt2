@@ -255,11 +255,14 @@ public:
         add_option<LOD_START_ANALYSIS>(this);
         add_option<LOD_END_ANALYSIS>(this);
         add_option<ANALYSIS_LOD_REPS>(this);
+        add_option<ANALYSIS_LOD_START_REP>(this);
         add_option<ANALYSIS_LOD_START_COST>(this);
         add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
         add_option<TISSUE_ACCRETION_MULT>(this);
         add_option<TISSUE_ACCRETION_ADD>(this);
-
+        add_option<ANALYSIS_MUTATIONS_OFF>(this);
+        add_option<TRACK_DETAILS>(this);
+        add_option<ONLY_MC>(this);
     }
     
     virtual void gather_tools() {
@@ -268,8 +271,8 @@ public:
 //        add_tool<ealib::analysis::lod_knockouts>(this);
 //        add_tool<ealib::analysis::lod_knockouts2>(this);
 //
-//        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
-//        add_tool<ealib::analysis::lod_report_gs>(this);
+        add_tool<ealib::analysis::lod_knockouts_capabilities>(this);
+        add_tool<ealib::analysis::lod_report_gs>(this);
 //        add_tool<ealib::analysis::lod_transition>(this);
 //        add_tool<ealib::analysis::lod_gls_circle_square_plot>(this);
 //        add_tool<ealib::analysis::movie_gs>(this);
@@ -284,15 +287,18 @@ public:
 //        add_tool<ealib::analysis::lod_last_knockouts_line>(this);
 //        add_tool<ealib::analysis::lod_archive_trans>(this);
 //        add_tool<ealib::analysis::lod_forced_uni>(this);
-        add_tool<ealib::analysis::lod_fitness>(this);
-        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
-        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
-        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
+//        add_tool<ealib::analysis::lod_fitness>(this);
+//        add_tool<ealib::analysis::lod_fitness_no_mutations>(this);
+//        add_tool<ealib::analysis::lod_fitness_at_trans>(this);
+//        add_tool<ealib::analysis::lod_fitness_start_stop>(this);
         add_tool<ealib::analysis::lod_entrench>(this);
         add_tool<ealib::analysis::lod_size>(this);
         add_tool<ealib::analysis::lod_entrench_add>(this);
         add_tool<ealib::analysis::lod_dol>(this);
-        add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
+        //add_tool<ealib::analysis::lod_entrench_mc_cost>(this);
+        add_tool<ealib::analysis::lod_entrench_add_start_stop>(this);
+        add_tool<ealib::analysis::lod_fitness_combo>(this);
+        
         
 
     }

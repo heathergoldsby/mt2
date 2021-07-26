@@ -22,14 +22,14 @@
 //#include "shannon_mutual_lod_tasks_orgs.h"
 //#include "lod_knockouts.h"
 //#include "multi_birth_selfrep_not_ancestor.h"
-#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
-#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
+//#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
+//##include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/subpopulation_founder.h>
 #include <ea/digital_evolution/utils/resource_consumption.h>
 #include <ea/digital_evolution/utils/task_switching.h>
 #include <ea/digital_evolution.h>
 #include <ea/cmdline_interface.h>
-#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
+//#include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
 #include <ea/subpopulation_founder.h>
 #include <ea/line_of_descent.h>
 #include <ea/generational_models/periodic_competition.h>
@@ -39,6 +39,7 @@
 #include <ea/line_of_descent.h>
 #include "mt_propagule_orig.h"
 #include "multi_birth_selfrep_not_remote_ancestor.h"
+#include "lod_knockouts_fitness.h"
 
 
 using namespace ealib;
@@ -96,6 +97,8 @@ struct lifecycle : public default_lifecycle {
         add_event<task_resource_consumption>(ea);
         add_event<task_switching_cost>(ea);
         add_event<ts_birth_event>(ea);
+        add_event<task_profile_tracking>(ea);
+        //add_event<task_profile_birth_event>(ea);
 
         typedef typename EA::task_library_type::task_ptr_type task_ptr_type;
         typedef typename EA::resource_ptr_type resource_ptr_type;
@@ -230,6 +233,15 @@ public:
         
         add_option<IND_REP_THRESHOLD>(this);
         add_option<COST_RAMP>(this);
+        
+        add_option<ANALYSIS_LOD_REPS>(this);
+        add_option<ANALYSIS_LOD_START_REP>(this);
+        add_option<ANALYSIS_LOD_TIMEPOINT_TO_ANALYZE>(this);
+
+        add_option<TISSUE_ACCRETION_ADD>(this);
+        add_option<ANALYSIS_MUTATIONS_OFF>(this);
+        add_option<TRACK_DETAILS>(this);
+        add_option<ONLY_MC>(this);
 
 
     }
@@ -237,6 +249,11 @@ public:
     virtual void gather_tools() {
         //add_tool<ealib::analysis::lod_shannon_tasks_orgs>(this);
         //add_tool<ealib::analysis::lod_knockouts>(this);
+        add_tool<ealib::analysis::lod_entrench_add>(this);
+        add_tool<ealib::analysis::lod_fitness_combo>(this);
+        add_tool<ealib::analysis::lod_task_switching_dol>(this);
+
+
 
     }
     
@@ -247,8 +264,9 @@ public:
 
         add_event<task_performed_tracking>(ea);
         add_event<task_switch_tracking>(ea);
-        //add_event<datafiles::mrca_lineage>(this,ea);
+        add_event<datafiles::mrca_lineage>(ea);
         add_event<subpopulation_founder_event>(ea);
+
     };
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, cli);

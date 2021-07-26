@@ -59,6 +59,7 @@ LIBEA_MD_DECL(XOR_MUTATION_MULT, "ea.gls.xor_mutation_mult", double);
 LIBEA_MD_DECL(EQUALS_MUTATION_MULT, "ea.gls.equals_mutation_mult", double);
 LIBEA_MD_DECL(NUM_PROPAGULE_CELL, "ea.gls.num_propagule_cell", int);
 LIBEA_MD_DECL(CURR_SOMA_SIZE, "ea.gls.curr_soma_size", int);
+LIBEA_MD_DECL(TRACK_DETAILS, "ea.mt.track_details", int);
 
 
 // Germ instructions!
@@ -67,7 +68,7 @@ LIBEA_MD_DECL(CURR_SOMA_SIZE, "ea.gls.curr_soma_size", int);
  */
 
 DIGEVO_INSTRUCTION_DECL(become_soma) {
-    get<TASK_PROFILE>(*p,"") += "S";
+    //get<TASK_PROFILE>(*p,"") += "S";
 
     if (get<GERM_STATUS>(*p, true) == true) {
         get<CURR_SOMA_SIZE>(ea,0) += 1;

@@ -40,3 +40,10 @@ exe mt_lr_gls_rogue :
     : <link>static ;
 
 install dist : mt_lr_gls_rogue : <location>$(HOME)/bin ;
+
+exe ts_mt :
+    src/ts_mt.cpp
+    /libea//libea_runner
+    : <link>static ;
+
+install dist : ts_mt : <location>$(HOME)/bin ;

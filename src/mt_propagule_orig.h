@@ -45,6 +45,8 @@ LIBEA_MD_DECL(TISSUE_ACCRETION_ADD, "ea.mt.tissue_accretion_add", int); //
 
 LIBEA_MD_DECL(NUM_CELLS_ACCRETED, "ea.mt.num_cells_accreted", int); //
 LIBEA_MD_DECL(TIME_DELAY, "ea.mt.time_delay", int); //
+LIBEA_MD_DECL(ORGANISM_ID, "ea.mt.organism_id", int); // id used to track organisms
+LIBEA_MD_DECL(ORGANISM_PARENT_ID, "ea.mt.organism_parent_id", int); // id used to track an organisms parent
 
 
 
@@ -65,7 +67,7 @@ DIGEVO_INSTRUCTION_DECL(if_res_less_than_thresh) {
 
 /* Divide remote only works if there are enough resources... */
 DIGEVO_INSTRUCTION_DECL(h_divide_remote) {
-    get<TASK_PROFILE>(*p,"") += "P";
+    //get<TASK_PROFILE>(*p,"") += "P";
 
     if(hw.age() >= (0.8 * hw.original_size())) {
         typename Hardware::genome_type& r=hw.repr();
@@ -181,7 +183,7 @@ DIGEVO_INSTRUCTION_DECL(h_divide_local) {
 
 
 DIGEVO_INSTRUCTION_DECL(h_divide_local) {
-    get<TASK_PROFILE>(*p,"") += "R";
+    //get<TASK_PROFILE>(*p,"") += "R";
 
     if(hw.age() >= (0.8 * hw.original_size())) {
         typename Hardware::genome_type& r=hw.repr();
@@ -594,7 +596,8 @@ struct mt_propagule : end_of_update_event<MEA> {
 template <typename MEA>
 struct mt_gls_propagule : end_of_update_event<MEA> {
     //! Constructor.
-    mt_gls_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt_gls.dat"), _df2("birth_tracking.dat") {
+
+    mt_gls_propagule(MEA& mea) : end_of_update_event<MEA>(mea), _df("mt_gls.dat"), _df2("mt_gls_detail.dat") {
         _df.add_field("update")
         .add_field("mean_rep_time")
         .add_field("mean_res")
@@ -621,6 +624,18 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
         .add_field("num_orgs")
         .add_field("mean_generation");
         
+        _df2.add_field("update")
+        .add_field("propagule_genome")
+        .add_field("parent_genome")
+        .add_field("offspring_genome")
+        .add_field("parent_id")
+        .add_field("offspring_id")
+        .add_field("workload")
+        .add_field("org_size")
+        .add_field("germ_size")
+        .add_field("germ_workload")
+        .add_field("soma_workload");
+        
         num_rep = 0;
     }
     
@@ -631,7 +646,7 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
     
     //! Perform germline replication among populations.
     virtual void operator()(MEA& mea) {
-        
+        int track_details = get<TRACK_DETAILS>(mea,0);
         
         configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(mea));
 
@@ -654,6 +669,17 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
 
             // See if any subpops have exceeded the resource threshold
             typename MEA::population_type offspring;
+            
+            if (track_details) {
+                for(typename MEA::iterator i=mea.begin(); i!=mea.end(); ++i) {
+                    int org_id = get<ORGANISM_ID>(*i,-2);
+                    if (org_id == -2) {
+                        put<ORGANISM_ID>(0,*i);
+                        put<ORGANISM_PARENT_ID>(-1, *i);
+                    }
+                }
+            }
+                
             for(typename MEA::iterator i=mea.begin(); i!=mea.end(); ++i) {
                 
                 // track time since group rep
@@ -709,29 +735,83 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     
                     int germ_count = 0;
                     int pop_count = 0;
-                    accumulator_set<double, stats<tag::mean, tag::variance> > germ_workload_acc;
-                    accumulator_set<double, stats<tag::mean, tag::variance> > soma_workload_acc;
+                    accumulator_set<double, stats<tag::sum, tag::mean, tag::variance> > germ_workload_acc;
+                    accumulator_set<double, stats<tag::sum, tag::mean, tag::variance> > soma_workload_acc;
 
                     
                     // get a new subpopulation:
                     typename MEA::individual_ptr_type p = mea.make_individual();
                     p->initialize(mea.md());
                     p->reset_rng(mea.rng().uniform_integer());
+                    
 
                     int total_workload = 0;
+
+                    int org_id = mea.size() + offspring.size();
+                    int parent_id = get<ORGANISM_ID>(*i,0);
+                    
+                    // i is the multicell; each j is a cell in the multicell
                     for(typename propagule_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                         typename MEA::subpopulation_type::individual_type& org=**j;
                         if (get<GERM_STATUS>(org, true)) {
                             ++germ_count;
                             germ_workload_acc(get<WORKLOAD>(org, 0.0));
                             if (!germ_present){
+                                // creating r which is our new genome for the next multicell
                                 typename MEA::subpopulation_type::genome_type r((*j)->genome().begin(), (*j)->genome().begin()+(*j)->hw().original_size());
+                               
+                                // record founder propagule
+                                if (track_details) {
+                                   
+                                    _df2.write(mea.current_update());
+                                    // This is the founder genome. It's the cell that serves as the founder of the multicell
+                                    typename MEA::subpopulation_type::individual_type& k_org=**i->traits().founder()->population().begin();
+                                    
+                                    
+                                    _df2.write("\"");
+                                    for(typename MEA::subpopulation_type::genome_type::iterator k2=k_org.genome().begin(); k2!=k_org.genome().end(); ++k2) {
+                                        _df2.write(*k2)
+                                        .write(" ");
+                                    }
+                                    _df2.write("\"");
+                                    
+                                    // This is the parent genome. It's the cell at the time of reproduction
+                                    typename MEA::subpopulation_type::individual_type& k_parent=**j;
+                                    _df2.write("\"");
+                                    for(typename MEA::subpopulation_type::genome_type::iterator k2=k_parent.genome().begin(); k2!=k_parent.genome().end(); ++k2) {
+                                       _df2.write(*k2)
+                                       .write(" ");
+                                    }
+                                    _df2.write("\"");
+                                    put<ORGANISM_ID>(org_id, *p);
+                                    put<ORGANISM_PARENT_ID>(parent_id, *p);
+                                    
+                                }
+                                
+                                
                                 typename MEA::subpopulation_type::individual_ptr_type q = p->make_individual(r);
+
                                 
+                             
+
+
                                 inherits_from(**j, *q, *p);
-                                
                                 mutate(*q,m,*p);
                                 
+                                if (track_details) {
+                                    // offspring genome
+                                    _df2.write("\"");
+                                      for(typename MEA::subpopulation_type::genome_type::iterator k2=q->genome().begin(); k2!=q->genome().end(); ++k2) {
+                                         _df2.write(*k2)
+                                         .write(" ");
+                                      }
+                                    _df2.write("\"");
+                                    _df2.write(parent_id)
+                                    .write(org_id);
+                                }
+
+                                
+                                // q is the new cell
                                 p->insert(p->end(), q);
                                 
                                 germ_present = true;
@@ -791,7 +871,22 @@ struct mt_gls_propagule : end_of_update_event<MEA> {
                     put<REPLICATION_STATE_INDEX>(get<REPLICATION_STATE_INDEX>(*i,0),*p);
                     put<ARCHIVE_MARK>(get<ARCHIVE_MARK>(*i,0),*p);
                     
-
+                    if (track_details) {
+                        _df2.write(total_workload)
+                        .write(pop_count)
+                        .write(germ_count)
+                        .write(sum(germ_workload_acc))
+                        .write(sum(soma_workload_acc));
+                        
+//                        for(typename EA::subpopulation_type::genome_type::iterator k2=org.genome().begin(); k2!=org.genome().end(); ++k2) {
+//                            df4.write(*k2)
+//                            .write(" ");
+//                        }
+                        
+                        
+                        _df2.endl();
+                        
+                    }
                     
                     offspring.insert(offspring.end(),p);
                     

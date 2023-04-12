@@ -220,3 +220,7 @@ knitr::include_graphics("images/Figure_S8_Entrenchment_vs_num_revertants_and_rel
 ```{r, Relative-fitness-vs-uni-and-multi-growth-rates, echo=FALSE, fig.pos='H', fig.cap="**Relative fitness vs. unicellular growth rate and multicellular growth rate.** We examine the correlation between revertant relative fitness and its two component parameters: the growth rate of the multicellular progenitor strain (**A**) and the growth rate of the unicellular revertant (**B**). Differentiated lineages from the dirty-work experiment (red), undifferentiated dirty-work lineages (blue), and the distributed-dirt lineages (gold)."}
 knitr::include_graphics("images/Figure_S9_Relative_fitness_vs_uni_growth_rate_and_multi_growth_rate_12OCT22.png")
 ```
+
+# References
+
+

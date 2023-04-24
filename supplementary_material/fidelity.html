@@ -142,13 +142,19 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="fidelity" class="section level1" number="7">
 <h1><span class="header-section-number">Chapter 7</span> Fidelity</h1>
-<!-- We directly measure the per site mutation rate ($\mu$) to assess the fidelity of replication in both multicellular and unicellular genotypes. To do this, we record parent and offspring propagule genomes for each replication event that occurs during our growth assays. Each pair of parent and offspring genomes is then aligned using the aphid R package [@aphid] and the instruction equivalent of single nucleotide polymorphisms (SNPs) are called wherever there is a mismatch. To restrict our analyses to mutations that could have been the result of either dirty work or the basal mutation rate we record only these SNPs (insertions and deletions are ignored, for example, as they are the result of errors in the copy loop and not from the effects of dirty work). Finally, duplicate mutation calls are removed by comparing SNPs found in offspring derived from the same parent. We repeat this process 100 times for each genotype. We calculate $\mu$ as the total number of unique mutations divided by the number of aligned positions from all offspring genomes. Fidelity is reported as one minus the per site mutation rate (i.e., $1 - \mu$). -->
+<p>We directly measure the per site mutation rate (<span class="math inline">\(\mu\)</span>) to assess the fidelity of replication in both multicellular and unicellular genotypes. To do this, we record parent and offspring propagule genomes for each replication event that occurs during our growth assays. Each pair of parent and offspring genomes is then aligned using the aphid R package <span class="citation">(<a href="#ref-aphid" role="doc-biblioref">Wilkinson 2019</a>)</span> and the instruction equivalent of single nucleotide polymorphisms (SNPs) are called wherever there is a mismatch. To restrict our analyses to mutations that could have been the result of either dirty work or the basal mutation rate we record only these SNPs (insertions and deletions are ignored, for example, as they are the result of errors in the copy loop and not from the effects of dirty work). Finally, duplicate mutation calls are removed by comparing SNPs found in offspring derived from the same parent. We repeat this process 100 times for each genotype. We calculate <span class="math inline">\(\mu\)</span> as the total number of unique mutations divided by the number of aligned positions from all offspring genomes. Fidelity is reported as one minus the per site mutation rate (i.e., <span class="math inline">\(1 - \mu\)</span>).</p>
 <!-- ```{r, mutation-rates, echo=FALSE, fig.pos='H', fig.cap="**Mutation rate by cell differentiation status.**"} -->
 <!-- knitr::include_graphics("images/Mutation_rate_by_cell_differentation_status_27JULY20.png") -->
 <!-- ``` -->
 <!-- ```{r, case-study-over-time-mutation-rates, echo=FALSE, fig.pos='H', fig.cap="**Evolutionary trajectory of a case study population (3416) in workload and fidelity space.**"} -->
 <!-- knitr::include_graphics("images/Workload_by_fidelity_case_study_3416_30JULY20.png") -->
 <!-- ``` -->
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-aphid" class="csl-entry">
+Wilkinson, Shaun. 2019. <span>“Aphid: An r Package for Analysis with Profile Hidden Markov Models.”</span> <em>Bioinformatics</em>. <a href="https://doi.org/10.1093/bioinformatics/btz159">https://doi.org/10.1093/bioinformatics/btz159</a>.
+</div>
 </div>
             </section>
 

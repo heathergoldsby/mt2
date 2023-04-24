@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</title>
+  <title>Chapter 4 Entrenchment | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</title>
   <meta name="description" content="This is the supplementary material accompanying the paper “Division of Labor Promotes the Entrenchment of Multicellularity”." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
+  <meta property="og:title" content="Chapter 4 Entrenchment | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="kgskocelas/mt2" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
+  <meta name="twitter:title" content="Chapter 4 Entrenchment | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
   
   <meta name="twitter:description" content="This is the supplementary material accompanying the paper “Division of Labor Promotes the Entrenchment of Multicellularity”." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="distributed-dirt-model.html"/>
-
+<link rel="prev" href="cost-of-multicellularity.html"/>
+<link rel="next" href="generation-and-assessment-of-unicellular-revertants.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -140,39 +140,29 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered">
-<h1>References</h1>
+<div id="entrenchment" class="section level1" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Entrenchment</h1>
+<p>In studies of molecular evolution, a focal substitution is said to be entrenched by subsequent substitutions if it becomes relatively more deleterious to revert as a result of those subsequent substitutions <span class="citation">(<a href="#ref-shah2015contingency" role="doc-biblioref">Shah, McCandlish, and Plotkin 2015</a>; <a href="#ref-flynn2017inference" role="doc-biblioref">Flynn et al. 2017</a>; <a href="#ref-starr2018pervasive" role="doc-biblioref">Starr et al. 2018</a>; <a href="#ref-biswas2019epistasis" role="doc-biblioref">Biswas et al. 2019</a>)</span>. Here, because we are examining the entrenchment of a (multicellularity), we require an entrenchment metric that integrates across all possible mutations that can cause reversion to unicellularity. Specifically, we assess the degree to which multicellularity has become entrenched, by performing the following steps. First, we create a new population with 1000 copies of the organism when it was born. We then add an externally imposed cost of multicellularity. We run the population with this new multicellularity cost and observe if it reverts to unicellularity within 100 generations (assessed by measuring whether mean organism size has dropped below 2 cells after 100 generations of growth). We repeat this measurement with the following multicellularity cost values: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048. To account for the stochastic nature of this assay, especially given the effect of dirty work on the organisms, we repeat the measurement three times for each organism, cost, and time point. We then compute a stability value for each genotype as the multicellular cost at which the probability of reversion to unicellularity <span class="math inline">\(= 0.5\)</span> using a logistic fit to the data (Fig. <a href="entrenchment.html#fig:dw-entrench-comparison">4.1</a>). Finally, entrenchment is computed as the difference in stability value at the final and transition time points.</p>
+<div class="figure"><span style="display:block;" id="fig:dw-entrench-comparison"></span>
+<img src="images/Figure_S3_Dirty_work_Entrenchment_20DEC22.png" alt="**A comparison of the stability of multicellularity at the transition and final time points of our &quot;Dirty Work&quot; evolution experiment.** The stability of multicellularity was measured for each of the 65 genotypes that evolved multicellularity at the transition (yellow) and final (green) time points of our experiment. The full range of cost values is shown with the outcomes of each replicate plotted as an indicator variable of the dominance of unicellular revertants. Logistic fits of the indicator variable are shown in yellow and green, representing the transition and final time points, respectively."  />
+<p class="caption">
+Figure 4.1: <strong>A comparison of the stability of multicellularity at the transition and final time points of our “Dirty Work” evolution experiment.</strong> The stability of multicellularity was measured for each of the 65 genotypes that evolved multicellularity at the transition (yellow) and final (green) time points of our experiment. The full range of cost values is shown with the outcomes of each replicate plotted as an indicator variable of the dominance of unicellular revertants. Logistic fits of the indicator variable are shown in yellow and green, representing the transition and final time points, respectively.
+</p>
+</div>
+</div>
+<h3>References</h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div class="csl-entry">
+<div id="ref-biswas2019epistasis" class="csl-entry">
 Biswas, Avik, Allan Haldane, Eddy Arnold, and Ronald M Levy. 2019. <span>“Epistasis and Entrenchment of Drug Resistance in HIV-1 Subtype b.”</span> <em>eLife</em> 8: e50524.
 </div>
-<div class="csl-entry">
-Chow, S., C. O. Wilke, C. Ofria, R. E. Lenski, and C. Adami. 2004. <span>“Adaptive Radiation from Resource Competition in Digital Organisms.”</span> <em>Science</em> 305: 84–86.
-</div>
-<div class="csl-entry">
+<div id="ref-flynn2017inference" class="csl-entry">
 Flynn, William F, Allan Haldane, Bruce E Torbett, and Ronald M Levy. 2017. <span>“Inference of Epistatic Effects Leading to Entrenchment and Drug Resistance in HIV-1 Protease.”</span> <em>Molecular Biology and Evolution</em> 34 (6): 1291–1306.
 </div>
-<div class="csl-entry">
-Goldsby, Heather J, Anna Dornhaus, Benjamin Kerr, and Charles Ofria. 2012. <span>“Task-Switching Costs Promote the Evolution of Division of Labor and Shifts in Individuality.”</span> <em>Proceedings of the National Academy of Sciences</em> 109 (34): 13686–91.
-</div>
-<div class="csl-entry">
-Goldsby, Heather J, David B Knoester, Charles Ofria, and Benjamin Kerr. 2014. <span>“The Evolutionary Origin of Somatic Cells Under the Dirty Work Hypothesis.”</span> <em>PLoS Biology</em> 12 (5): e1001858.
-</div>
-<div class="csl-entry">
-Lenski, R. E., C. Ofria, R. T. Pennock, and C. Adami. 2003. <span>“The Evolutionary Origin of Complex Features.”</span> <em>Nature</em> 423: 139–44.
-</div>
-<div class="csl-entry">
-Libby, Eric, Peter L Conlin, Ben Kerr, and William C Ratcliff. 2016. <span>“Stabilizing Multicellularity Through Ratcheting.”</span> <em>Philosophical Transactions of the Royal Society B: Biological Sciences</em> 371 (1701): 20150444.
-</div>
-<div class="csl-entry">
-Ofria, Charles, and Claus O Wilke. 2004. <span>“Avida: A Software Platform for Research in Computational Evolutionary Biology.”</span> <em>Artificial Life</em> 10 (2): 191–229.
-</div>
-<div class="csl-entry">
+<div id="ref-shah2015contingency" class="csl-entry">
 Shah, Premal, David M McCandlish, and Joshua B Plotkin. 2015. <span>“Contingency and Entrenchment in Protein Evolution Under Purifying Selection.”</span> <em>Proceedings of the National Academy of Sciences</em> 112 (25): E3226–35.
 </div>
-<div class="csl-entry">
+<div id="ref-starr2018pervasive" class="csl-entry">
 Starr, Tyler N, Julia M Flynn, Parul Mishra, Daniel NA Bolon, and Joseph W Thornton. 2018. <span>“Pervasive Contingency and Entrenchment in a Billion Years of Hsp90 Evolution.”</span> <em>Proceedings of the National Academy of Sciences</em> 115 (17): 4453–58.
-</div>
 </div>
 </div>
             </section>
@@ -180,8 +170,8 @@ Starr, Tyler N, Julia M Flynn, Parul Mishra, Daniel NA Bolon, and Joseph W Thorn
           </div>
         </div>
       </div>
-<a href="distributed-dirt-model.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="cost-of-multicellularity.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="generation-and-assessment-of-unicellular-revertants.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

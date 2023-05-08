@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Section 8 Fidelity | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</title>
+  <title>{r, echo=FALSE} # rsconnect::deployApp('https://kgskocelas.shinyapps.io/supplementary_material/') # | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</title>
   <meta name="description" content="This is the supplementary material accompanying the paper “Division of Labor Promotes the Entrenchment of Multicellularity”." />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Section 8 Fidelity | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
+  <meta property="og:title" content="{r, echo=FALSE} # rsconnect::deployApp('https://kgskocelas.shinyapps.io/supplementary_material/') # | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="kgskocelas/mt2" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Section 8 Fidelity | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
+  <meta name="twitter:title" content="{r, echo=FALSE} # rsconnect::deployApp('https://kgskocelas.shinyapps.io/supplementary_material/') # | Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity" />
   
   <meta name="twitter:description" content="This is the supplementary material accompanying the paper “Division of Labor Promotes the Entrenchment of Multicellularity”." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="distribution-of-fitness-effects-of-unicellular-reversion-mutations.html"/>
-<link rel="next" href="effect-of-time-spent-evolving-as-a-multicell.html"/>
+<link rel="prev" href="references.html"/>
+
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -99,11 +99,7 @@ div.csl-indent {
 <li><a href="./">Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</a></li>
 
 <li class="divider"></li>
-<li><a href="sankey-network-graphic.html#sankey-network-graphic" id="toc-sankey-network-graphic"><span class="toc-section-number">1</span> Sankey Network Graphic</a>
-<ul>
-<li><a href="sankey-network-graphic.html#transition" id="toc-transition"><span class="toc-section-number">1.1</span> Transition</a></li>
-<li><a href="sankey-network-graphic.html#final" id="toc-final"><span class="toc-section-number">1.2</span> Final</a></li>
-</ul></li>
+<li><a href="sankey-network-graphic-in-progress.html#sankey-network-graphic-in-progress" id="toc-sankey-network-graphic-in-progress"><span class="toc-section-number">1</span> Sankey Network Graphic In Progress</a></li>
 <li><a href="avida.html#avida" id="toc-avida"><span class="toc-section-number">2</span> Avida</a>
 <ul>
 <li><a href="avida.html#time" id="toc-time"><span class="toc-section-number">2.1</span> Time</a></li>
@@ -124,7 +120,8 @@ div.csl-indent {
 <li><a href="fidelity.html#fidelity" id="toc-fidelity"><span class="toc-section-number">8</span> Fidelity</a></li>
 <li><a href="effect-of-time-spent-evolving-as-a-multicell.html#effect-of-time-spent-evolving-as-a-multicell" id="toc-effect-of-time-spent-evolving-as-a-multicell"><span class="toc-section-number">9</span> Effect of time spent evolving as a multicell</a></li>
 <li><a href="distributed-dirt-model.html#distributed-dirt-model" id="toc-distributed-dirt-model"><span class="toc-section-number">10</span> Distributed Dirt Model</a></li>
-<li><a href="references.html#references" id="toc-references">References</a></li>
+<li><a href="references.html#references" id="toc-references"><span class="toc-section-number">11</span> References</a></li>
+<li><a href="r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material.html#r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material" id="toc-r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material"><code>{r, echo=FALSE} # rsconnect::deployApp('https://kgskocelas.shinyapps.io/supplementary_material/') #</code></a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -145,20 +142,42 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="fidelity" class="section level1" number="8">
-<h1><span class="header-section-number">Section 8</span> Fidelity</h1>
-<p>We directly measure the per site mutation rate (<span class="math inline">\(\mu\)</span>) to assess the fidelity of replication in both multicellular and unicellular genotypes. To do this, we record parent and offspring propagule genomes for each replication event that occurs during our growth assays. Each pair of parent and offspring genomes is then aligned using the aphid R package <span class="citation">(<a href="#ref-aphid" role="doc-biblioref">Wilkinson 2019</a>)</span> and the instruction equivalent of single nucleotide polymorphisms (SNPs) are called wherever there is a mismatch. To restrict our analyses to mutations that could have been the result of either dirty work or the basal mutation rate we record only these SNPs (insertions and deletions are ignored, for example, as they are the result of errors in the copy loop and not from the effects of dirty work). Finally, duplicate mutation calls are removed by comparing SNPs found in offspring derived from the same parent. We repeat this process 100 times for each genotype. We calculate <span class="math inline">\(\mu\)</span> as the total number of unique mutations divided by the number of aligned positions from all offspring genomes. Fidelity is reported as one minus the per site mutation rate (i.e., <span class="math inline">\(1 - \mu\)</span>).</p>
-<!-- ```{r, mutation-rates, echo=FALSE, fig.pos='H', fig.cap="**Mutation rate by cell differentiation status.**"} -->
-<!-- knitr::include_graphics("images/Mutation_rate_by_cell_differentation_status_27JULY20.png") -->
-<!-- ``` -->
-<!-- ```{r, case-study-over-time-mutation-rates, echo=FALSE, fig.pos='H', fig.cap="**Evolutionary trajectory of a case study population (3416) in workload and fidelity space.**"} -->
-<!-- knitr::include_graphics("images/Workload_by_fidelity_case_study_3416_30JULY20.png") -->
-<!-- ``` -->
-</div>
-<h3>References</h3>
+<div id="r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material" class="section level1 unnumbered">
+<h1><code>{r, echo=FALSE} # rsconnect::deployApp('https://kgskocelas.shinyapps.io/supplementary_material/') #</code></h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-aphid" class="csl-entry">
+<div class="csl-entry">
+Biswas, Avik, Allan Haldane, Eddy Arnold, and Ronald M Levy. 2019. <span>“Epistasis and Entrenchment of Drug Resistance in HIV-1 Subtype b.”</span> <em>eLife</em> 8: e50524.
+</div>
+<div class="csl-entry">
+Chow, S., C. O. Wilke, C. Ofria, R. E. Lenski, and C. Adami. 2004. <span>“Adaptive Radiation from Resource Competition in Digital Organisms.”</span> <em>Science</em> 305: 84–86.
+</div>
+<div class="csl-entry">
+Flynn, William F, Allan Haldane, Bruce E Torbett, and Ronald M Levy. 2017. <span>“Inference of Epistatic Effects Leading to Entrenchment and Drug Resistance in HIV-1 Protease.”</span> <em>Molecular Biology and Evolution</em> 34 (6): 1291–1306.
+</div>
+<div class="csl-entry">
+Goldsby, Heather J, Anna Dornhaus, Benjamin Kerr, and Charles Ofria. 2012. <span>“Task-Switching Costs Promote the Evolution of Division of Labor and Shifts in Individuality.”</span> <em>Proceedings of the National Academy of Sciences</em> 109 (34): 13686–91.
+</div>
+<div class="csl-entry">
+Goldsby, Heather J, David B Knoester, Charles Ofria, and Benjamin Kerr. 2014. <span>“The Evolutionary Origin of Somatic Cells Under the Dirty Work Hypothesis.”</span> <em>PLoS Biology</em> 12 (5): e1001858.
+</div>
+<div class="csl-entry">
+Lenski, R. E., C. Ofria, R. T. Pennock, and C. Adami. 2003. <span>“The Evolutionary Origin of Complex Features.”</span> <em>Nature</em> 423: 139–44.
+</div>
+<div class="csl-entry">
+Libby, Eric, Peter L Conlin, Ben Kerr, and William C Ratcliff. 2016. <span>“Stabilizing Multicellularity Through Ratcheting.”</span> <em>Philosophical Transactions of the Royal Society B: Biological Sciences</em> 371 (1701): 20150444.
+</div>
+<div class="csl-entry">
+Ofria, Charles, and Claus O Wilke. 2004. <span>“Avida: A Software Platform for Research in Computational Evolutionary Biology.”</span> <em>Artificial Life</em> 10 (2): 191–229.
+</div>
+<div class="csl-entry">
+Shah, Premal, David M McCandlish, and Joshua B Plotkin. 2015. <span>“Contingency and Entrenchment in Protein Evolution Under Purifying Selection.”</span> <em>Proceedings of the National Academy of Sciences</em> 112 (25): E3226–35.
+</div>
+<div class="csl-entry">
+Starr, Tyler N, Julia M Flynn, Parul Mishra, Daniel NA Bolon, and Joseph W Thornton. 2018. <span>“Pervasive Contingency and Entrenchment in a Billion Years of Hsp90 Evolution.”</span> <em>Proceedings of the National Academy of Sciences</em> 115 (17): 4453–58.
+</div>
+<div class="csl-entry">
 Wilkinson, Shaun. 2019. <span>“Aphid: An r Package for Analysis with Profile Hidden Markov Models.”</span> <em>Bioinformatics</em>. <a href="https://doi.org/10.1093/bioinformatics/btz159">https://doi.org/10.1093/bioinformatics/btz159</a>.
+</div>
 </div>
 </div>
             </section>
@@ -166,8 +185,8 @@ Wilkinson, Shaun. 2019. <span>“Aphid: An r Package for Analysis with Profile H
           </div>
         </div>
       </div>
-<a href="distribution-of-fitness-effects-of-unicellular-reversion-mutations.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="effect-of-time-spent-evolving-as-a-multicell.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="references.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

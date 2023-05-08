@@ -24,7 +24,7 @@
 <meta name="author" content="Peter L. Conlin, Heather J. Goldsby, Eric Libby, Katherine G. Skocelas, William C. Ratcliff, Charles Ofria, Benjamin Kerr" />
 
 
-<meta name="date" content="2023-04-26" />
+<meta name="date" content="2023-05-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -59,7 +59,7 @@ div.csl-indent {
 }
 </style>
 
-<link rel="stylesheet" href="/Users/kgskocelas/Dropbox/My Mac (Katherines-MacBook-Pro.local)/Desktop/mt2/supplementary_material/libs/style.css" type="text/css" />
+<link rel="stylesheet" href="/Users/kgskocelas/Library/CloudStorage/Dropbox/My Mac (Katherines-MacBook-Pro.local)/Desktop/mt2/supplementary_material/libs/style.css" type="text/css" />
 </head>
 
 <body>
@@ -75,7 +75,7 @@ div.csl-indent {
 <li><a href="./">Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</a></li>
 
 <li class="divider"></li>
-<li><a href="section-sankey-network-in-progress.html#section-sankey-network-in-progress" id="section-toc-sankey-network-in-progress"><span class="toc-section-number">1</span> Sankey Network In Progress</a></li>
+<li><a href="section-sankey-network-graphic-in-progress.html#section-sankey-network-graphic-in-progress" id="section-toc-sankey-network-graphic-in-progress"><span class="toc-section-number">1</span> Sankey Network Graphic In Progress</a></li>
 <li><a href="section-avida.html#section-avida" id="section-toc-avida"><span class="toc-section-number">2</span> Avida</a>
 <ul>
 <li><a href="section-avida.html#section-time" id="section-toc-time"><span class="toc-section-number">2.1</span> Time</a></li>
@@ -96,7 +96,8 @@ div.csl-indent {
 <li><a href="section-fidelity.html#section-fidelity" id="section-toc-fidelity"><span class="toc-section-number">8</span> Fidelity</a></li>
 <li><a href="section-effect-of-time-spent-evolving-as-a-multicell.html#section-effect-of-time-spent-evolving-as-a-multicell" id="section-toc-effect-of-time-spent-evolving-as-a-multicell"><span class="toc-section-number">9</span> Effect of time spent evolving as a multicell</a></li>
 <li><a href="section-distributed-dirt-model.html#section-distributed-dirt-model" id="section-toc-distributed-dirt-model"><span class="toc-section-number">10</span> Distributed Dirt Model</a></li>
-<li><a href="section-references.html#section-references" id="section-toc-references">References</a></li>
+<li><a href="section-references.html#section-references" id="section-toc-references"><span class="toc-section-number">11</span> References</a></li>
+<li><a href="section-r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material.html#section-r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material" id="section-toc-r-echofalse-rsconnectdeployapphttpskgskocelas.shinyapps.iosupplementary_material"><code>{r, echo=FALSE} # rsconnect::deployApp('https://kgskocelas.shinyapps.io/supplementary_material/') #</code></a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -122,7 +123,7 @@ div.csl-indent {
 <p>We added an extrinsic cost of multicellularity for the purposes of testing how readily populations would revert to back to unicells. This cost was implemented as a time delay for producing a propagule from a multicellular organism. During this delay the organism and all its constituent cells are inert – they cannot perform tasks, acquire resources, reproduce, or communicate. Additionally, the organism remains at risk for being replaced by a reproducing competitor.</p>
 <p>To confirm the costly nature of this time delay, we reran the evolution of our initially unicellular digital populations varying this delay from 0 updates (as in our original treatment) to 512 updates. We varied this multicellularity cost from 0 updates (as in our original evolution treatment) to 512 updates, incrementing by powers of 2 (e.g., 0, 1, 2, 4, 8, 16, etc.). As expected, fewer replicates evolved multicells as this cost was increased (Fig. <a href="section-cost-of-multicellularity.html#fig:multi-cost">4.1</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:multi-cost"></span>
-<img src="/Users/kgskocelas/Dropbox/My Mac (Katherines-MacBook-Pro.local)/Desktop/mt2/supplementary_material/libs/images/Percent_multi_by_cost.png" alt="**Percent of evolutionary runs that evolve multicellularity as a function of time delay cost.** For each treatment, depicted along the x-axis, we change the cost of propagule production, and thus the benefits of multicellularity. We ran 1000 replicates of each treatment. The percentage of runs that evolve multicellularity decreases as the time delay cost increases." width="600px" />
+<img src="/Users/kgskocelas/Library/CloudStorage/Dropbox/My Mac (Katherines-MacBook-Pro.local)/Desktop/mt2/supplementary_material/libs/images/Percent_multi_by_cost.png" alt="**Percent of evolutionary runs that evolve multicellularity as a function of time delay cost.** For each treatment, depicted along the x-axis, we change the cost of propagule production, and thus the benefits of multicellularity. We ran 1000 replicates of each treatment. The percentage of runs that evolve multicellularity decreases as the time delay cost increases." width="600px" />
 <p class="caption">
 Figure 4.1: <strong>Percent of evolutionary runs that evolve multicellularity as a function of time delay cost.</strong> For each treatment, depicted along the x-axis, we change the cost of propagule production, and thus the benefits of multicellularity. We ran 1000 replicates of each treatment. The percentage of runs that evolve multicellularity decreases as the time delay cost increases.
 </p>

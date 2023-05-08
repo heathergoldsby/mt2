@@ -21,17 +21,17 @@
   <meta name="twitter:description" content="This is the supplementary material accompanying the paper “Division of Labor Promotes the Entrenchment of Multicellularity”." />
   
 
-<meta name="author" content="Peter L. Conlin, Heather J. Goldsby, Eric Libby, Katherine G. Skocelas, William C. Ratcliff, Charles Ofria, Benjamin Kerr" />
+<meta name="author" content="Peter L. Conlin, Heather J. Goldsby, Erihttp://127.0.0.1:24605/rmd_output/4/sankey-network-graphic-in-progress.html#sankey-network-graphic-in-progressc Libby, Katherine G. Skocelas, William C. Ratcliff, Charles Ofria, Benjamin Kerr" />
 
 
-<meta name="date" content="2023-04-26" />
+<meta name="date" content="2023-05-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="sankey-network-graphic-in-progress.html"/>
+<link rel="prev" href="sankey-network-graphic.html"/>
 <link rel="next" href="evolution-of-multicellularity.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -99,7 +99,11 @@ div.csl-indent {
 <li><a href="./">Supplementary Material for Division of Labor Promotes the Entrenchment of Multicellularity</a></li>
 
 <li class="divider"></li>
-<li><a href="sankey-network-graphic-in-progress.html#sankey-network-graphic-in-progress" id="toc-sankey-network-graphic-in-progress"><span class="toc-section-number">1</span> Sankey Network Graphic In Progress</a></li>
+<li><a href="sankey-network-graphic.html#sankey-network-graphic" id="toc-sankey-network-graphic"><span class="toc-section-number">1</span> Sankey Network Graphic</a>
+<ul>
+<li><a href="sankey-network-graphic.html#transition" id="toc-transition"><span class="toc-section-number">1.1</span> Transition</a></li>
+<li><a href="sankey-network-graphic.html#final" id="toc-final"><span class="toc-section-number">1.2</span> Final</a></li>
+</ul></li>
 <li><a href="avida.html#avida" id="toc-avida"><span class="toc-section-number">2</span> Avida</a>
 <ul>
 <li><a href="avida.html#time" id="toc-time"><span class="toc-section-number">2.1</span> Time</a></li>
@@ -390,13 +394,12 @@ div.csl-indent {
 </tbody>
 </table>
 <p><br></p>
-<p>The metabolism of digital cells involves the completion of logic functions, where the execution of a series of genomic instructions enables the cell to export the result of a logic operation on input bitstrings. The nine possible logic functions that can be performed are NOT, NAND, AND, ORNOT, OR, ANDNOT, NOR, XOR, and EQUALS. The execution of each function enables the cell to sequester resources from a virtual resource pool, where there is one resource pool per organism per function. Each resource pool has a constant in-flow rate of one unit per update (the standard unit of time in Avida), while at the same time 1% of the available resources flow out, limiting total accumulation to 100 units. When a cell exports the result of a function, it uptakes 5% of the available resource associated with that function. For each function, we also specify a per-site probability of mutation each time a function is performed, referred to a ``function mutagen level’’ (FML). Functions NOT and NAND are always non-mutagenic and thus have an FML of 0. For the treatments described in this work, the FML of the remaining seven functions increases with the complexity of the function (see Table <a href="avida.html#tab:FML">2.6</a>). The resources acquired by successful execution of functions are required for an organism to reproduce.</p>
+<p>The metabolism of digital cells involves the completion of logic functions, where the execution of a series of genomic instructions enables the cell to export the result of a logic operation on input bitstrings. The nine possible logic functions that can be performed are NOT, NAND, AND, ORNOT, OR, ANDNOT, NOR, XOR, and EQUALS. The execution of each function enables the cell to sequester resources from a virtual resource pool, where there is one resource pool per organism per function. Each resource pool has a constant in-flow rate of one unit per update (the standard unit of time in Avida), while at the same time 1% of the available resources flow out, limiting total accumulation to 100 units. When a cell exports the result of a function, it uptakes 5% of the available resource associated with that function. For each function, we also specify a per-site probability of mutation each time a function is performed, referred to a ``function mutagen level’’ (FML). Functions NOT and NAND are always non-mutagenic and thus have an FML of 0. For the treatments described in this work, the FML of the remaining seven functions increases with the complexity of the function (see Table 1.6). The resources acquired by successful execution of functions are required for an organism to reproduce.</p>
 <!-- Make table caption full width even though table isn't (hack-y workaround because no other way to do this in bookdown) -->
-<!-- <div style='text-align: left; color: grey'> Table 1.6: <b>The nine logic functions are listed in order of their complexity.</b> The probability that a genomic instruction is mutated upon execution of a function (i.e., the function mutagen level, or FML) increases incrementally with functional complexity. </div> -->
+<div style="text-align: left; color: grey">
+Table 1.6: <b>The nine logic functions are listed in order of their complexity.</b> The probability that a genomic instruction is mutated upon execution of a function (i.e., the function mutagen level, or FML) increases incrementally with functional complexity.
+</div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-<span id="tab:FML">Table 2.6: </span><strong>The nine logic functions are listed in order of their complexity.</strong> The probability that a genomic instruction is mutated upon execution of a function (i.e., the function mutagen level, or FML) increases incrementally with functional complexity.
-</caption>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -487,13 +490,13 @@ EQUALS
 <h2><span class="header-section-number">2.3</span> Workload</h2>
 <p>A cell’s workload is defined as:
 <span class="math display">\[ w = \sum_{i \in F} N_i \frac{FML_i}{FML_{AND}} \]</span>
-where <span class="math inline">\(F \equiv\)</span> {NOT, NAND, AND, ORNOT, OR, ANDNOT, NOR, XOR, EQUALS}, <span class="math inline">\(N_i\)</span> is the number of times function <span class="math inline">\(i\)</span> is performed, <span class="math inline">\(FML_i\)</span> is the mutagenic level of function <span class="math inline">\(i\)</span> (as specified in Table <a href="avida.html#tab:FML">2.6</a>, and <span class="math inline">\(FML_{AND}\)</span> is the base <span class="math inline">\(FML\)</span> (i.e., the mutagenic level of the function AND).
+where <span class="math inline">\(F \equiv\)</span> {NOT, NAND, AND, ORNOT, OR, ANDNOT, NOR, XOR, EQUALS}, <span class="math inline">\(N_i\)</span> is the number of times function <span class="math inline">\(i\)</span> is performed, <span class="math inline">\(FML_i\)</span> is the mutagenic level of function <span class="math inline">\(i\)</span> (as specified in Table 1.6), and <span class="math inline">\(FML_{AND}\)</span> is the base <span class="math inline">\(FML\)</span> (i.e., the mutagenic level of the function AND).
 We define propagule workload difference as the mean workload of propagule-ineligible cells minus the mean workload of propagule-eligible cells.</p>
 </div>
 <div id="mutations" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> Mutations</h2>
 <p>Mutations to the genome, in which one instruction is replaced by another randomly selected instruction, occur during two different processes: organismal reproduction and the execution of ``dirty work’’ (logic tasks with FML <span class="math inline">\(&gt;\)</span> 0).
-Mutations during reproduction only occur during propagule production (not tissue accretion) with probability 0.01 per site. On average this results in one new mutation per propagule produced. Dirty work mutations occur immediately after a cell performs a task associated with a strictly positive function mutagen level. Each site in the genome of the performing cell experiences mutations with probability given by the FML of the task executed (Table <a href="avida.html#tab:FML">2.6</a>. More details behind the dirty work framework are provided in Goldsby et al. 2014 <span class="citation">(<a href="#ref-goldsby2014evolutionary" role="doc-biblioref">Goldsby et al. 2014</a>)</span>.</p>
+Mutations during reproduction only occur during propagule production (not tissue accretion) with probability 0.01 per site. On average this results in one new mutation per propagule produced. Dirty work mutations occur immediately after a cell performs a task associated with a strictly positive function mutagen level. Each site in the genome of the performing cell experiences mutations with probability given by the FML of the task executed (Table 1.6). More details behind the dirty work framework are provided in Goldsby et al. 2014 <span class="citation">(<a href="#ref-goldsby2014evolutionary" role="doc-biblioref">Goldsby et al. 2014</a>)</span>.</p>
 </div>
 <div id="baseline-evolution-experiment" class="section level2" number="2.5">
 <h2><span class="header-section-number">2.5</span> Baseline evolution experiment</h2>
@@ -523,7 +526,7 @@ Ofria, Charles, and Claus O Wilke. 2004. <span>“Avida: A Software Platform for
           </div>
         </div>
       </div>
-<a href="sankey-network-graphic-in-progress.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sankey-network-graphic.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="evolution-of-multicellularity.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>

@@ -73,8 +73,7 @@ for (i in unique(sankey$strategy_rep)) {
                 nodePadding=8,
                 iterations = 0,
                 height = 20*max(c(length(unique(data$mut_op)), length(unique(data$wt_ID)))),
-                width = 1500) # %>%
-   # saveNetwork(file = paste(i,'trans_reversion_mutations_sankey_plot.html'))
+                width = 1500) # %>%saveNetwork(file = paste(i,'trans_reversion_mutations_sankey_plot.html'))
 
   # Get final data
   data <- sankey[sankey$strategy_rep==i & sankey$timepoint==1,]
@@ -104,8 +103,7 @@ for (i in unique(sankey$strategy_rep)) {
                             gsub("^c\\(|\\)$", "", toString(list(op_colors))),
                             '])', sep="")
   # Make the Network
-  sankeyNetwork(outputId = "sankeyPlot",
-                Links = data,
+  sankeyNetwork(Links = data,
                 Nodes = data_nodes,
                 Source = "IDsource",
                 Target = "IDtarget",
@@ -116,8 +114,8 @@ for (i in unique(sankey$strategy_rep)) {
                 nodeWidth=80,
                 fontSize=15,
                 nodePadding=8,
-                iterations = 0,
+                iterations =0,
                 height = 20*max(c(length(unique(data$mut_op)), length(unique(data$wt_ID)))),
-                width = 1500) #%>%
-    #saveNetwork(file = paste(i,'final_reversion_mutations_sankey_plot.html'))
+                width = 1000) %>%
+    saveNetwork(file = paste(i,'final_reversion_mutations_sankey_plot.html'))
 }

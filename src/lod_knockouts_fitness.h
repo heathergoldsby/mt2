@@ -362,8 +362,8 @@ namespace ealib {
         int num_uni = 0;
         
 
-        // for 100 places in the genome, we ...
-        for (int z =0; z < 100; z++) {
+        // for all places in the genome, we ...
+        for (int z =0; z < knockout_loc->population()[0]->genome().size(); z++) {
             // iterate through each instruction in the isa
             for (int q = 0; q < control_ea->isa().size(); q++) {
                 typename EA::individual_ptr_type knockout_loc = ea.make_individual(*i->traits().founder());

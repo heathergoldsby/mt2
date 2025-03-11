@@ -1,4 +1,0 @@
-Instruction,Description
-\<dec>,Decreases a value in memory by one.
-\<inc>,Increases a value in memory by one.
-\<nand>,Performs a bitwise nand ("not-and") instruction on two values in the organism.

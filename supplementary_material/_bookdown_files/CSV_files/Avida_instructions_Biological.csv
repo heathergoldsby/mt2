@@ -1,8 +1,0 @@
-Instruction,Description
-\<block_propagation>,"Marks the cell as propagule ineligible. All cells start propagule eligible. The status is inherited from a parent cell to its daughter. Once executed, there is no way for a cell (or its descendants) to reverse this status in order to become propagule eligible again. Appears in source code as \<become_soma>."
-\<produce_tissue>,"Produces a new cell in the same organism. Works using the standard Avida copy loop. The daughter cell is placed in a neighboring space that the parent cell is facing if it is empty (i.e., cells cannot overwrite other cells). Appears in source code as \<h_divide_local>."
-\<produce_propagule>,Produces a propagule if sufficient resources have been collected and the copy loop has executed properly. A propagule eligible cell is selected at random from the organism. It is copied to initiate a new organism with this single propagule cell. The new organism replaces an organism selected at random within the population. Appears in source code as \<h_divide_remote>.
-\<if_propagule_eligible>,Executes the next instruction if the cell is propagule eligible. Appears in source code as \<if_germ>.
-\<if_propagule_ineligible>,Executes the next instruction if the cell is propagule ineligible. Appears in source code as \<if_soma>.
-\<if_res_less_than_threshold>,Executes the next instruction if the organism has fewer resources than are required for propagule production. Appears in source code as \<if_res_less_than_thresh>.
-\<if_res_more_than_threshold>,Executes the next instruction if the organism has more resources than are required for propagule production. Appears in source code as \<if_res_more_than_thresh>.

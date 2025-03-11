@@ -1,9 +1,0 @@
-book_filename: "supplemental_material"
-language:
-  ui:
-    chapter_name: "Section "
-delete_merged_file: true
-rmd_files: [
-  "index.Rmd",
-  "tail.Rmd"
-]

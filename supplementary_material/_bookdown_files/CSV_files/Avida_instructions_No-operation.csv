@@ -1,5 +1,0 @@
-Instruction,Description
-"\<nop_a>","No-operation instruction.  Does nothing when executed, but may alter the behavior of other instructions it follows."
-"\<nop_b>","No-operation instruction.  Does nothing when executed, but may alter the behavior of other instructions it follows."
-"\<nop_c>","No-operation instruction.  Does nothing when executed, but may alter the behavior of other instructions it follows."
-"\<nop_x>","No-operation instruction.  Does nothing when executed and will NOT change the behavior of other instructions."
